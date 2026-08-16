@@ -639,6 +639,41 @@ export default function StandaloneShell() {
                   </a>
                 );
               })}
+
+              {/* Ekadashi Studio — devotional katha & AI video-prompt kit (separate route) */}
+              {(() => {
+                const isCollapsed = isSidebarCollapsed && !isMobileOpen;
+                return (
+                  <a
+                    href="/ekadashi"
+                    onClick={() => setIsMobileOpen(false)}
+                    title="Ekadashi Studio"
+                    className={`
+                      group relative flex items-center rounded-lg transition-all duration-150 text-[13px] font-medium
+                      ${isCollapsed ? 'h-10 w-10 justify-center mx-auto' : 'px-3 py-2.5 w-full gap-3'}
+                      text-amber-200/70 hover:text-amber-100 hover:bg-amber-400/[0.06]
+                    `}
+                  >
+                    <span className="flex-shrink-0 text-amber-300/70 group-hover:text-amber-200">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15 12h-5" />
+                        <path d="M15 8h-5" />
+                        <path d="M19 17V5a2 2 0 0 0-2-2H4" />
+                        <path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" />
+                      </svg>
+                    </span>
+                    {!isCollapsed && (
+                      <span className="truncate flex-1 tracking-tight">Ekadashi Studio</span>
+                    )}
+                    {isCollapsed && (
+                      <div className="fixed left-16 ml-1 px-3 py-1.5 bg-[#121215]/95 backdrop-blur-md text-white text-xs font-semibold rounded-lg shadow-2xl border border-white/15 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 z-[100] whitespace-nowrap flex items-center gap-2 -translate-x-1 group-hover:translate-x-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_6px_#fcd34d]" />
+                        <span>Ekadashi Studio</span>
+                      </div>
+                    )}
+                  </a>
+                );
+              })()}
             </nav>
           </aside>
         )}
