@@ -65,7 +65,7 @@ function nextEkadashi() { const t = todayISO(); const r = sortedEkadashis(); ret
 
 /* ================================================================== */
 /*  Claude API helper — routes through the server so the key stays      */
-/*  server-side and browser CORS/CSP restrictions don't apply.          */
+/*  server-side (env ANTHROPIC_API_KEY) or is supplied per-browser.     */
 /* ================================================================== */
 function storedKey() {
   try { return window.localStorage.getItem("eks_anthropic_key") || ""; } catch { return ""; }
@@ -303,6 +303,33 @@ function downloadText(name, text) {
   a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
 }
 
+// Persists across sessions: uses the Claude artifact store when present, else falls back to browser storage (standalone).
+const SAVE_KEY = "eks_state";
+const store = {
+  async get(key) {
+    try {
+      if (typeof window !== "undefined" && window.storage && window.storage.get) {
+        const r = await window.storage.get(key);
+        return r ? r.value : null;
+      }
+    } catch {}
+    try { if (typeof localStorage !== "undefined") return localStorage.getItem(key); } catch {}
+    return null;
+  },
+  async set(key, value) {
+    try {
+      if (typeof window !== "undefined" && window.storage && window.storage.set) { await window.storage.set(key, value); return; }
+    } catch {}
+    try { if (typeof localStorage !== "undefined") localStorage.setItem(key, value); } catch {}
+  },
+  async del(key) {
+    try {
+      if (typeof window !== "undefined" && window.storage && window.storage.delete) { await window.storage.delete(key); return; }
+    } catch {}
+    try { if (typeof localStorage !== "undefined") localStorage.removeItem(key); } catch {}
+  },
+};
+
 /* ================================================================== */
 /*  Small UI pieces                                                    */
 /* ================================================================== */
@@ -457,6 +484,8 @@ export default function EkadashiStudio() {
   const [board, setBoard] = useState([]);
   const [activeLang, setActiveLang] = useState("hi");
   const [dubLang, setDubLang] = useState("hi");
+  const [sbView, setSbView] = useState("combined");
+  const [loaded, setLoaded] = useState(false);
   const [ytMeta, setYtMeta] = useState(null);
 
   // process
@@ -480,6 +509,50 @@ export default function EkadashiStudio() {
       else window.localStorage.removeItem("eks_anthropic_key");
     } catch { /* ignore storage errors */ }
   }
+
+  // restore last session on open
+  useEffect(() => {
+    (async () => {
+      const raw = await store.get(SAVE_KEY);
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.ekEn) { const f = EKADASHIS.find((e) => e.en === d.ekEn); if (f) setEk(f); }
+          if (d.detail) setDetail(d.detail);
+          if (d.lang) setLang(d.lang);
+          if (typeof d.clip === "number") setClip(d.clip);
+          if (typeof d.scenes === "number") setScenes(d.scenes);
+          if (d.story) setStory(d.story);
+          if (Array.isArray(d.characters)) setCharacters(d.characters);
+          if (Array.isArray(d.board)) setBoard(d.board);
+          if (d.ytMeta) setYtMeta(d.ytMeta);
+          if (d.activeLang) setActiveLang(d.activeLang);
+          if (d.dubLang) setDubLang(d.dubLang);
+          if (d.sbView) setSbView(d.sbView);
+          if (d.engine) setEngine(d.engine);
+          if (d.narratorVoice) setNarratorVoice(d.narratorVoice);
+          if (d.style) setStyle(d.style);
+          if (d.neg) setNeg(d.neg);
+          if (d.genEkEn) { const g = EKADASHIS.find((e) => e.en === d.genEkEn); if (g) setGenEk(g); }
+          if (typeof d.genCtx === "string") setGenCtx(d.genCtx);
+        } catch {}
+      }
+      setLoaded(true);
+    })();
+  }, []);
+
+  // auto-save (debounced) whenever anything meaningful changes
+  useEffect(() => {
+    if (!loaded) return;
+    const t = setTimeout(() => {
+      store.set(SAVE_KEY, JSON.stringify({
+        ekEn: ek.en, detail, lang, clip, scenes, story, characters, board, ytMeta,
+        activeLang, dubLang, sbView, engine, narratorVoice, style, neg,
+        genEkEn: genEk ? genEk.en : null, genCtx,
+      }));
+    }, 400);
+    return () => clearTimeout(t);
+  }, [loaded, ek, detail, lang, clip, scenes, story, characters, board, ytMeta, activeLang, dubLang, sbView, engine, narratorVoice, style, neg, genEk, genCtx]);
 
   const liveCfg = () => ({ clip, engine, style, neg, narratorVoice, ek: genEk });
 
@@ -557,6 +630,12 @@ export default function EkadashiStudio() {
   }
 
   const removeScene = (i) => setBoard((b) => b.filter((_, j) => j !== i));
+
+  async function clearSaved() {
+    await store.del(SAVE_KEY);
+    setStory({ hi: "", en: "" }); setCharacters([]); setBoard([]); setYtMeta(null);
+    setResumeFrom(null); setError(null); setStatus("");
+  }
 
   const hasStory = story.hi || story.en;
   const showTabs = story.hi && story.en;
@@ -750,10 +829,15 @@ export default function EkadashiStudio() {
               <div className="sb-meta">{board.length} scenes · {clip}s · {fmtTime(runtime)}</div>
             </div>
             <div className="sb-tools">
-              <CopyBtn gold text={allPrompts()} label="Copy all prompts" />
-              <span className="sb-tip">Paste a scene block into your video tool. Dialogue scenes lock a single speaker for clean lip-sync.</span>
+              <Segmented ariaLabel="View" value={sbView} onChange={setSbView} options={[{ v: "combined", l: "All-in-one" }, { v: "scenes", l: "Per scene" }]} />
+              <CopyBtn gold text={allPrompts()} label="Copy all scene prompts" />
+              <button className="ghost-gold sm" onClick={() => downloadText(`${(genEk || ek).en.replace(/\s+/g, "-")}-all-prompts.txt`, allPrompts())}><Download size={13} /> .txt</button>
             </div>
+            <div className="sb-tip">{sbView === "combined" ? "Every scene prompt in one block — one copy grabs them all, in order." : "Trim with the ✕ on any scene; numbering and dub timecodes recompute."}</div>
 
+            {sbView === "combined" ? (
+              <pre className="combined-pre">{allPrompts()}</pre>
+            ) : (
             <div className="scenes">
               {board.map((s, i) => {
                 const isD = s.type === "dialogue";
@@ -775,6 +859,7 @@ export default function EkadashiStudio() {
                 );
               })}
             </div>
+            )}
 
             {canContinue && (
               <button className="continue" onClick={continueBoard} disabled={loading}>
@@ -837,6 +922,7 @@ export default function EkadashiStudio() {
       </main>
 
       <footer className="foot">
+        <p className="foot-saved">✓ Saved automatically on this device — your last kit reloads when you reopen. <button className="foot-clear" onClick={clearSaved}>Clear saved</button></p>
         <p>Stories are AI retellings of traditional Puranic kathas for creative use — verify against scripture for ritual purposes.</p>
         <p className="foot-om">॥ ॐ नमो भगवते वासुदेवाय ॥</p>
       </footer>
@@ -1052,8 +1138,8 @@ const CSS = `
 .sb-title{display:flex; align-items:center; gap:9px; font-family:var(--f-display); font-size:22px; color:var(--gold-soft);}
 .sb-title svg{color:var(--gold);}
 .sb-meta{font-size:12.5px; color:var(--plum-soft);}
-.sb-tools{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:10px 0 16px;}
-.sb-tip{font-size:11.5px; color:#A99B7E; flex:1; min-width:180px;}
+.sb-tools{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:10px 0 10px;}
+.sb-tip{font-size:11.5px; color:#A99B7E; margin-bottom:14px;}
 .scenes{display:flex; flex-direction:column; gap:14px;}
 .scene{background:var(--panel); border:1px solid var(--panel-brd); border-left:3px solid var(--gold); border-radius:14px; padding:14px 15px; box-shadow:0 14px 34px -26px rgba(0,0,0,.8);}
 .scene-top{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
@@ -1071,6 +1157,7 @@ const CSS = `
 .prompt-pre{margin:0; font-size:12px; line-height:1.62; color:#D9CDAF; font-family:ui-monospace,'SF Mono',Menlo,monospace; white-space:pre-wrap; word-break:break-word;}
 .en-ref{margin-top:9px; font-size:12.5px; color:#A99B7E; line-height:1.5;}
 .en-ref span{display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:1px; color:var(--gold-2); background:rgba(230,174,55,.12); padding:1px 6px; border-radius:5px; margin-right:6px; vertical-align:middle;}
+.combined-pre{margin:0; background:rgba(12,7,22,.6); border:1px solid rgba(230,174,55,.18); border-radius:12px; padding:13px 14px; font-size:12px; line-height:1.6; color:#DED2B4; font-family:ui-monospace,'SF Mono',Menlo,monospace; white-space:pre-wrap; word-break:break-word; max-height:560px; overflow-y:auto;}
 .continue{width:100%; margin-top:14px; min-height:46px; border:1px dashed rgba(230,174,55,.4); background:rgba(230,174,55,.08); color:var(--gold-soft); border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:14px; font-weight:500; transition:background .18s;}
 .continue:hover:not(:disabled){background:rgba(230,174,55,.16);}
 .continue:disabled{opacity:.7; cursor:wait;}
@@ -1109,6 +1196,8 @@ const CSS = `
 /* footer */
 .foot{max-width:640px; margin:36px auto 0; text-align:center; color:#8C7F63; font-size:11.5px; line-height:1.6;}
 .foot-om{font-family:var(--f-hi); color:var(--gold-2); font-size:15px; margin-top:10px; opacity:.85;}
+.foot-saved{color:#8FCFA0;}
+.foot-clear{background:none; border:none; color:var(--saffron); text-decoration:underline; font-size:11.5px; padding:0 2px; cursor:pointer;}
 
 .eks-app button:focus-visible, .eks-app input:focus-visible, .eks-app textarea:focus-visible{outline:2px solid var(--gold); outline-offset:2px; border-radius:8px;}
 @media (max-width:600px){
