@@ -67,19 +67,13 @@ function nextEkadashi() { const t = todayISO(); const r = sortedEkadashis(); ret
 /*  Claude API helper — routes through the server so the key stays      */
 /*  server-side (env ANTHROPIC_API_KEY) or is supplied per-browser.     */
 /* ================================================================== */
-function storedKey() {
-  try { return window.localStorage.getItem("eks_anthropic_key") || ""; } catch { return ""; }
-}
 async function callClaude(system, user) {
   let lastErr;
   for (let attempt = 0; attempt <= 2; attempt++) {
     try {
-      const headers = { "Content-Type": "application/json" };
-      const key = storedKey();
-      if (key) headers["x-anthropic-key"] = key;
       const res = await fetch("/api/ekadashi", {
         method: "POST",
-        headers,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ system, user }),
       });
       const data = await res.json().catch(() => ({}));
@@ -499,17 +493,6 @@ export default function EkadashiStudio() {
   const [genEk, setGenEk] = useState(ek);
   const [genCtx, setGenCtx] = useState("");
 
-  // bring-your-own Anthropic key (stored only in this browser; sent as x-anthropic-key)
-  const [apiKey, setApiKey] = useState("");
-  useEffect(() => { setApiKey(storedKey()); }, []);
-  function saveKey(v) {
-    setApiKey(v);
-    try {
-      if (v) window.localStorage.setItem("eks_anthropic_key", v);
-      else window.localStorage.removeItem("eks_anthropic_key");
-    } catch { /* ignore storage errors */ }
-  }
-
   // restore last session on open
   useEffect(() => {
     (async () => {
@@ -686,24 +669,6 @@ export default function EkadashiStudio() {
         <div className="field">
           <label className="lbl">Ekadashi</label>
           <EkadashiPicker value={ek} onChange={setEk} />
-        </div>
-
-        <div className="field">
-          <label className="lbl">Anthropic API key</label>
-          <input
-            className="keyinput"
-            type="password"
-            value={apiKey}
-            onChange={(e) => saveKey(e.target.value)}
-            placeholder="sk-ant-… (stored only in your browser)"
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <span className="hint">
-            {apiKey
-              ? "Saved in this browser. Sent only with your generate request."
-              : "Needed to generate. Paste your key from console.anthropic.com — it is kept in your browser only."}
-          </span>
         </div>
 
         <div className="grid2">
@@ -1004,9 +969,6 @@ const CSS = `
 .lbl{font-family:var(--f-display); font-size:12.5px; letter-spacing:1.4px; text-transform:uppercase; color:var(--gold);}
 .hint{font-size:11.5px; color:#A99B7E;}
 .runtime{color:var(--plum-soft);}
-.keyinput{width:100%; background:rgba(21,13,40,.6); border:1px solid var(--panel-brd); border-radius:12px; color:#F1E7CE; font-size:14px; padding:12px 13px; min-height:48px; outline:none; transition:border-color .2s; letter-spacing:.5px;}
-.keyinput::placeholder{color:#8F815F; letter-spacing:0;}
-.keyinput:focus{border-color:var(--gold);}
 
 /* picker */
 .picker{position:relative;}
