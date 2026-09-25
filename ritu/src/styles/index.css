@@ -64,3 +64,18 @@
     border-radius: 6px;
   }
 }
+
+/* feedback motion: sheet slide-up and toast */
+dialog.sheet[open] {
+  transition: translate var(--dur-feedback) var(--ease-out);
+  translate: 0 0;
+}
+@starting-style {
+  dialog.sheet[open] { translate: 0 100%; }
+}
+.toast {
+  animation: toast-in var(--dur-feedback) var(--ease-out);
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+}

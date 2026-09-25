@@ -6,24 +6,413 @@
     "home": "Home",
     "calendar": "Calendar",
     "insights": "Insights",
+    "profiles": "Profiles",
     "settings": "Settings",
-    "label": "Main",
-    "profiles": "Profiles"
+    "label": "Main"
+  },
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Done",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "notNow": "Not now",
+    "days": "days",
+    "increase": "Increase",
+    "decrease": "Decrease",
+    "chooseProfile": "Choose a profile"
   },
   "setup": {
     "loading": "Opening Ritu",
     "storageTitle": "Ritu can't save on this device",
     "storageBody": "Storage is turned off, maybe because this is a private window. Open Ritu in a normal window, or free up some space, then try again."
   },
+  "lang": {
+    "en": "English",
+    "hi": "हिंदी"
+  },
+  "disclaimer": "Predictions are estimates, not medical advice and not birth control.",
+  "privacy": "Everything stays on this phone. No account, no internet, nothing is shared.",
   "home": {
     "empty": "Add a profile to start.",
-    "emptyHint": "Each person on this phone gets her own profile, with an optional PIN."
+    "addProfile": "Add a profile",
+    "locked": "{{name}}, locked",
+    "ringLabel": "{{name}}'s cycle"
+  },
+  "status": {
+    "paused": "Predictions paused",
+    "noData": "No periods logged yet",
+    "onPeriod": "On period, day {{day}}",
+    "upcoming_one": "Day {{day}}, period tomorrow",
+    "upcoming_other": "Day {{day}}, period in {{count}} days",
+    "due": "Period expected any day",
+    "late_one": "Period is 1 day late",
+    "late_other": "Period is {{count}} days late"
+  },
+  "phase": {
+    "menstrual": "Period",
+    "follicular": "Follicular phase",
+    "ovulation": "Ovulation",
+    "luteal": "Luteal phase",
+    "late": "Late",
+    "unknown": ""
+  },
+  "actions": {
+    "periodStarted": "Period started",
+    "periodEnded": "Period ended"
+  },
+  "toast": {
+    "saved": "Saved",
+    "periodStarted": "Saved: period started today",
+    "periodEnded": "Saved: period ended today"
+  },
+  "today": {
+    "day": "Day {{day}}",
+    "quickLog": "Today",
+    "logMore": "Log more",
+    "nextPeriods": "Next periods",
+    "plusMinus_one": "± 1 day",
+    "plusMinus_other": "± {{count}} days",
+    "fertileWindow": "Fertile days {{from}} – {{to}}",
+    "flagBanner": "Something in her recent cycles may be worth checking with a doctor.",
+    "seeInsights": "See what we noticed",
+    "stillOn": "This period has gone on for 10 days or more. Has it ended?",
+    "setEnd": "Set the last day",
+    "lastDay": "Last day of the period"
+  },
+  "confidence": {
+    "high_one": "High confidence, based on {{count}} cycle",
+    "high_other": "High confidence, based on {{count}} cycles",
+    "medium_one": "Medium confidence, based on {{count}} cycle",
+    "medium_other": "Medium confidence, based on {{count}} cycles",
+    "low_one": "Low confidence: log a few more periods",
+    "low_other": "Low confidence: log a few more periods"
+  },
+  "confidenceShort": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "log": {
+    "period": "Period",
+    "periodHint": "Turn on if she bled like a period on this day",
+    "flow": "Flow",
+    "flowHint": "Very heavy means changing a pad every 1–2 hours",
+    "symptoms": "Symptoms",
+    "mood": "Mood",
+    "pain": "Pain",
+    "notLogged": "Not logged",
+    "painValue": "{{value}} of 10",
+    "painNone": "No pain",
+    "painWorst": "Worst",
+    "clear": "Clear",
+    "notes": "Notes",
+    "bbt": "Temperature (°C)",
+    "lh": "Ovulation (LH) test",
+    "positive": "Positive",
+    "negative": "Negative",
+    "private": "Private",
+    "privateHint": "Only on this profile. Never shown in reports; left out when someone else manages the profile.",
+    "intimacy": "Sex",
+    "intimacy_none": "None",
+    "intimacy_protected": "Protected",
+    "intimacy_unprotected": "Unprotected",
+    "pregnancyTest": "Pregnancy test",
+    "privateNote": "Private note",
+    "nearbyTitle": "Edit the existing period instead?",
+    "nearbyBody": "A period already started on {{date}}, less than 10 days away.",
+    "editExisting": "Edit the existing period",
+    "addNew": "Add a new period"
+  },
+  "flow": {
+    "spotting": "Spotting",
+    "light": "Light",
+    "medium": "Medium",
+    "heavy": "Heavy",
+    "very_heavy": "Very heavy"
+  },
+  "symptom": {
+    "cramps": "Cramps",
+    "headache": "Headache",
+    "backache": "Backache",
+    "bloating": "Bloating",
+    "acne": "Acne",
+    "breast_tenderness": "Tender breasts",
+    "fatigue": "Tiredness",
+    "nausea": "Nausea",
+    "cravings": "Cravings",
+    "insomnia": "Poor sleep",
+    "dizziness": "Dizziness",
+    "upset_stomach": "Upset stomach"
+  },
+  "mood": {
+    "happy": "Happy",
+    "calm": "Calm",
+    "energetic": "Energetic",
+    "sensitive": "Sensitive",
+    "sad": "Sad",
+    "irritable": "Irritable",
+    "anxious": "Anxious"
   },
   "calendar": {
-    "empty": "Add a profile to see her calendar."
+    "empty": "Add a profile to see her calendar.",
+    "view": "Calendar view",
+    "thisProfile": "This profile",
+    "everyone": "Everyone",
+    "prev": "Previous month",
+    "next": "Next month",
+    "infoPredicted": "Period likely",
+    "infoFertile": "Fertile day (estimate)",
+    "infoOvulation": "Ovulation likely (estimate)",
+    "infoNothing": "Nothing expected on this day.",
+    "lockedHidden": "Locked profiles are not shown."
+  },
+  "legend": {
+    "title": "Legend",
+    "period": "Period",
+    "predicted": "Predicted period",
+    "fertile": "Fertile days",
+    "ovulation": "Ovulation",
+    "today": "Today",
+    "logged": "Has a log",
+    "dotFilled": "Filled dot: period logged",
+    "dotHollow": "Hollow dot: period predicted"
   },
   "insights": {
-    "empty": "Insights appear after a few logged periods."
+    "empty": "Insights appear after she logs her periods.",
+    "stats": "Summary",
+    "avgCycle": "Average cycle",
+    "avgPeriod": "Average period",
+    "variation": "Variation",
+    "confidence": "Confidence",
+    "days_one": "{{value}} day",
+    "days_other": "{{value}} days",
+    "basedOn_one": "Based on {{count}} cycle",
+    "basedOn_other": "Based on {{count}} cycles",
+    "flags": "What we noticed",
+    "cycleChart": "Cycle length",
+    "periodChart": "Period length",
+    "avgLine": "Dashed line: average ({{value}} days)",
+    "needTwo": "Log two periods to see cycle lengths.",
+    "needEnded": "Mark when periods end to see their length.",
+    "heatmap": "Symptoms by cycle day",
+    "heatmapHint": "Darker means she had it on that day in more of her cycles.",
+    "heatRow": "{{symptom}}: most often on days {{days}}",
+    "noSymptoms": "Log symptoms to see patterns here.",
+    "cycleDay": "Cycle day",
+    "noticed": "What we noticed",
+    "why": "Why it can matter",
+    "seeDoctor": "Consider seeing a doctor. This is not a diagnosis.",
+    "report": "Doctor report",
+    "reportFailed": "Couldn't make the report. Please try again."
+  },
+  "flag": {
+    "cycle_length": {
+      "title": "Cycles shorter or longer than usual",
+      "noticed": "Her last 3 cycles were each shorter than 21 days or longer than the usual range.",
+      "why": "Cycles that are often very short or very long can be linked to hormone or thyroid changes, stress or other conditions a doctor can check."
+    },
+    "irregular": {
+      "title": "Irregular cycles",
+      "noticed": "Her recent cycle lengths vary more than is typical for her age.",
+      "why": "Very irregular cycles can have many causes, such as PCOS, thyroid changes or stress."
+    },
+    "long_period": {
+      "title": "Long periods",
+      "noticed": "At least 2 of her last 3 periods lasted more than 7 days.",
+      "why": "Bleeding for more than a week can lead to low iron (anaemia) and is worth checking."
+    },
+    "missed": {
+      "title": "No period for over 90 days",
+      "noticed": "No period has been logged for more than 3 months.",
+      "why": "Missing periods can be caused by pregnancy, weight change, stress, PCOS or thyroid changes."
+    },
+    "heavy_flow": {
+      "title": "Very heavy flow",
+      "noticed": "Very heavy flow was logged in at least 2 of her last 3 cycles.",
+      "why": "Very heavy bleeding can cause anaemia and tiredness. A doctor can help."
+    },
+    "severe_pain": {
+      "title": "Severe period pain",
+      "noticed": "Pain of 8 or more out of 10 was logged in at least 2 of her last 3 cycles.",
+      "why": "Pain that stops daily life is not something to put up with. Conditions like endometriosis can be treated."
+    },
+    "between_bleeding": {
+      "title": "Bleeding between periods",
+      "noticed": "Bleeding or spotting was logged between periods in at least 2 of her last 3 cycles.",
+      "why": "Bleeding between periods has many causes and is worth checking with a doctor."
+    },
+    "missed_log": {
+      "title": "A period may be missing ({{date}})",
+      "noticed": "The cycle starting {{date}} is about twice her usual length, so a period may not have been logged.",
+      "why": "Add the missing period in the calendar so predictions stay accurate."
+    },
+    "period_not_ended": {
+      "title": "Period still marked as ongoing",
+      "noticed": "The period that started {{date}} has no end day yet.",
+      "why": "Set its last day so predictions stay accurate."
+    }
+  },
+  "onboarding": {
+    "progress": "Setup progress",
+    "langTitle": "Language",
+    "privacyTitle": "Her data stays hers",
+    "promise1": "Everything is saved only on this phone.",
+    "promise2": "Each profile can have its own PIN.",
+    "promise3": "No account, no internet, no ads, nothing is shared.",
+    "whoTitle": "Who is this for?",
+    "whoMe": "Me",
+    "whoOther": "Someone I care for",
+    "whoOtherHint": "For example, a daughter. Private notes are turned off for her profile.",
+    "nameTitle": "Your name and bangle colour",
+    "nameTitleOther": "Her name and bangle colour",
+    "birthTitle": "Birth year",
+    "birthSub": "Optional. Helps us give age-right advice.",
+    "birthInvalid": "Enter a year between 1930 and {{max}}.",
+    "lastTitle": "When did the last period start?",
+    "lastLabel": "First day of the last period",
+    "dontRemember": "I don't remember",
+    "dontRememberHint": "Predictions start after you log the next period.",
+    "lengthsTitle": "Usual lengths",
+    "lengthsSub": "Not sure? Keep the usual 28 and 5 days. Ritu learns as you log.",
+    "notSure": "Not sure",
+    "fertilityTitle": "Fertile days",
+    "fertilityMinor": "Off by default for under-18s and for profiles you manage for someone.",
+    "pinTitle": "Add a PIN?",
+    "pinSub": "A 4-digit PIN hides this profile from others who use this phone.",
+    "addPin": "Add a PIN",
+    "noPin": "No PIN",
+    "notifyTitle": "Reminders",
+    "notifyBody": "Ritu can remind you 2 days before a period and if a period is late. Reminders work even without internet.",
+    "notifyDiscreet": "By default they only say \"Reminder – Tap to open\", so nobody learns anything from the lock screen.",
+    "allowReminders": "Allow reminders",
+    "created": "Saved: {{name}} added",
+    "doneTitle": "{{name}} is ready",
+    "doneSub": "Add another person who uses this phone, or start tracking.",
+    "addAnother": "Add another profile"
+  },
+  "colours": {
+    "rani": "Rani",
+    "haldi": "Haldi",
+    "mehendi": "Mehendi",
+    "narangi": "Narangi",
+    "aasmani": "Aasmani",
+    "jamuni": "Jamuni",
+    "kattha": "Kattha",
+    "sleti": "Sleti"
+  },
+  "pin": {
+    "title": "PIN",
+    "explain": "The PIN stays on this phone only. Locked profiles show just a name and a lock, even in reminders.",
+    "set": "Set a PIN",
+    "change": "Change PIN",
+    "remove": "Remove PIN",
+    "removed": "Saved: PIN removed",
+    "saved": "Saved: PIN set",
+    "choose": "Choose a 4-digit PIN",
+    "confirm": "Enter the PIN again",
+    "mismatch": "The PINs didn't match. Try again.",
+    "enter": "Enter the PIN",
+    "wrong_one": "Wrong PIN. 1 try left.",
+    "wrong_other": "Wrong PIN. {{count}} tries left.",
+    "lockedOut_one": "Too many tries. Wait 1 second.",
+    "lockedOut_other": "Too many tries. Wait {{count}} seconds.",
+    "forgot": "Forgot PIN",
+    "resetPending": "PIN will be removed on {{when}}. Enter the PIN to cancel.",
+    "entered_one": "1 digit entered",
+    "entered_other": "{{count}} digits entered",
+    "delete": "Delete digit",
+    "lockNow": "Lock now"
+  },
+  "profiles": {
+    "empty": "No profiles on this phone yet.",
+    "emptyHint": "Add one for yourself, and one for each person you look after.",
+    "managed": "Managed by you",
+    "self": "Her own",
+    "hasPin": "PIN"
+  },
+  "profile": {
+    "name": "Name",
+    "colour": "Bangle colour",
+    "birthYear": "Birth year",
+    "settings": "Profile settings",
+    "settingsFor": "{{name}}",
+    "notFound": "This profile no longer exists.",
+    "details": "Details",
+    "mode": "Mode",
+    "cycle": "Cycle",
+    "cycleLen": "Cycle length",
+    "periodLen": "Period length",
+    "lutealLen": "Days from ovulation to period",
+    "cycleHint": "Used until she has logged enough periods; after that Ritu uses her own history.",
+    "showFertility": "Show fertile days"
+  },
+  "mode": {
+    "track": "Track periods",
+    "trackHint": "Periods, symptoms and predictions",
+    "ttc": "Trying to conceive",
+    "ttcHint": "Adds temperature and ovulation tests",
+    "pregnant": "Pregnant",
+    "pregnantHint": "Predictions and period reminders pause"
+  },
+  "reminders": {
+    "title": "Reminders",
+    "androidOnly": "Reminders work in the Android app. The web version cannot send them.",
+    "discreet": "Discreet reminders",
+    "discreetHint": "Show only \"Reminder – Tap to open\". Always on while a PIN is set.",
+    "period_soon": "Before a period",
+    "period_late": "When a period is late",
+    "fertile_soon": "Before fertile days",
+    "daily_log": "Daily check-in",
+    "pill": "Pill reminder",
+    "fertileNeeds": "Needs \"Trying to conceive\" mode and fertile days turned on.",
+    "time": "Time",
+    "daysBefore": "Days before",
+    "denied": "Reminders are blocked. Allow notifications for Ritu in Android settings."
+  },
+  "notify": {
+    "discreetTitle": "Reminder",
+    "discreetBody": "Tap to open",
+    "periodSoon_one": "Period likely tomorrow",
+    "periodSoon_other": "Period likely in {{count}} days",
+    "periodLate_one": "Period is 1 day late",
+    "periodLate_other": "Period is {{count}} days late",
+    "fertileSoon": "Fertile days start tomorrow",
+    "dailyLog": "How are you today? Tap to log",
+    "pill": "Time for your pill"
+  },
+  "export": {
+    "title": "Export",
+    "button": "Export (CSV + JSON)",
+    "failed": "Couldn't export. Please try again.",
+    "hint": "Periods and logs as spreadsheets, plus everything (private notes included) as a JSON file.",
+    "hintManaged": "Periods and logs as spreadsheets, plus a JSON file."
+  },
+  "delete": {
+    "title": "Delete profile",
+    "hint": "Removes this profile and all her data from this phone. This cannot be undone.",
+    "button": "Delete profile",
+    "confirmTitle": "Delete {{name}}?",
+    "confirmBody": "All periods, logs, notes and reminders for this profile will be deleted. Export first if you want a copy.",
+    "typeName": "Type \"{{name}}\" to confirm",
+    "done": "Saved: {{name}} deleted"
+  },
+  "backup": {
+    "title": "Backup",
+    "hint": "Save a file with every unlocked profile, to keep safe or to move to a new phone. Uninstalling Ritu deletes all data on this phone.",
+    "save": "Save backup",
+    "restore": "Restore from backup",
+    "nothing": "All profiles are locked. Unlock them first.",
+    "skippedLocked_one": "1 locked profile was left out. Unlock it to include it.",
+    "skippedLocked_other": "{{count}} locked profiles were left out. Unlock them to include them.",
+    "invalid": "That file isn't a Ritu backup.",
+    "confirmTitle": "Restore this backup?",
+    "confirmBody_one": "This adds 1 profile ({{names}}). If it is already on this phone, it is replaced.",
+    "confirmBody_other": "This adds {{count}} profiles ({{names}}). Any already on this phone are replaced.",
+    "restored_one": "Saved: 1 profile restored",
+    "restored_other": "Saved: {{count}} profiles restored"
   },
   "settings": {
     "language": "Language",
@@ -31,17 +420,58 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
+    "weekStart": "Week starts on",
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "profiles": "Profiles",
+    "profilesHint": "Reminders, PIN, export and delete are set per profile.",
+    "manageProfiles": "Open profiles",
     "about": "About",
+    "privacyPolicy": "Privacy policy",
     "version": "Version {{version}}"
   },
-  "lang": {
-    "en": "English",
-    "hi": "हिंदी"
-  },
-  "disclaimer": "Predictions are estimates, not medical advice and not birth control.",
-  "profiles": {
-    "empty": "No profiles on this phone yet.",
-    "emptyHint": "Add one for yourself, and one for each person you look after."
-  },
-  "privacy": "Everything stays on this phone. No account, no internet, nothing is shared."
+  "policy": {
+    "title": "Privacy policy",
+    "updated": "Last updated September 2026",
+    "what": {
+      "title": "What Ritu stores",
+      "body": "The names, birth years, periods, symptoms, moods, notes and settings you enter. Nothing else. Ritu has no account and collects no device IDs, location or contacts."
+    },
+    "where": {
+      "title": "Where it is stored",
+      "body": "Only on this phone, inside the app. Ritu has no server. It works without internet and never sends your data anywhere."
+    },
+    "share": {
+      "title": "Sharing",
+      "body": "Ritu shares nothing. There are no ads, no analytics and no crash reporting. Data leaves the phone only when you export a file or a doctor report yourself."
+    },
+    "pin": {
+      "title": "PINs",
+      "body": "A PIN is stored on this phone as a salted hash, never as the PIN itself. Locked profiles show only a name and a lock."
+    },
+    "notify": {
+      "title": "Reminders",
+      "body": "Reminders are scheduled on the phone. By default they say only \"Reminder – Tap to open\"."
+    },
+    "export": {
+      "title": "Export and backup",
+      "body": "You can export each profile as CSV and JSON, or save a backup file. Keep these files safe: anyone with the file can read it."
+    },
+    "delete": {
+      "title": "Deleting data",
+      "body": "Delete a profile in its settings, or uninstall the app to delete everything. Deleted data cannot be recovered."
+    },
+    "children": {
+      "title": "Children",
+      "body": "A parent or guardian can create a profile for a child under 18. Fertile days are hidden by default and private notes are turned off for these profiles."
+    },
+    "medical": {
+      "title": "Not medical advice",
+      "body": "Predictions are estimates, not medical advice and not birth control. Ritu never diagnoses; it only suggests when it may be worth seeing a doctor."
+    },
+    "contact": {
+      "title": "Questions",
+      "body": "Ask the person or organisation that gave you this app, or the developer listed on the app store page."
+    }
+  }
 }

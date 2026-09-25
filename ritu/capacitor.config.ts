@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   android: { allowMixedContent: false },
   plugins: {
     LocalNotifications: {
+      smallIcon: 'ic_stat_ritu',
       iconColor: '#3B3486',
     },
   },

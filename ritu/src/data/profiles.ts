@@ -6,7 +6,7 @@ export type NewProfile = Pick<Profile, 'name' | 'colour'> & Partial<Omit<Profile
 
 export async function listProfiles(): Promise<Profile[]> {
   const all = await (await getDb()).getAll('profiles');
-  return all.sort((a, b) => a.createdAt - b.createdAt);
+  return all.sort((a, b) => a.createdAt - b.createdAt || a.name.localeCompare(b.name));
 }
 
 export async function getProfile(id: string): Promise<Profile | undefined> {
