@@ -11,7 +11,7 @@ import { router } from './router';
 applyTheme(storedTheme());
 
 // One service worker, web only. Inside Capacitor the app is already local, and a SW would break it.
-if (!isNative() && 'serviceWorker' in navigator && import.meta.env.PROD) {
+if (!isNative() && 'serviceWorker' in navigator && import.meta.env.PROD && import.meta.env.MODE !== 'artifact') {
   void import('virtual:pwa-register').then(({ registerSW }) => registerSW({ immediate: true }));
 }
 

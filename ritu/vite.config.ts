@@ -2,15 +2,19 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 
-export default defineConfig({
+// `vite build --mode artifact`: one self-contained HTML file (no service worker, in-memory routes)
+// for hosting inside a sandboxed page.
+export default defineConfig(({ mode }) => ({
   define: { __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? '0.1.0') },
   // Tailwind runs through its Vite plugin; don't pick up a parent folder's postcss.config
   css: { postcss: {} },
+  build: mode === 'artifact' ? { outDir: 'dist-artifact' } : {},
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
+    mode === 'artifact' ? viteSingleFile() : VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.ts',
@@ -34,4 +38,4 @@ export default defineConfig({
       devOptions: { enabled: false },
     }),
   ],
-});
+}));

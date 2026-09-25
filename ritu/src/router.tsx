@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, createMemoryRouter } from 'react-router';
 import { Root } from './features/shell/Root';
 import { AppShell } from './features/shell/AppShell';
 import { HomeScreen } from './features/home/HomeScreen';
@@ -14,7 +14,10 @@ import { PrivacyScreen } from './features/privacy/PrivacyScreen';
 // charts are heavy: load the Insights screen on first visit
 const InsightsScreen = lazy(() => import('./features/insights/InsightsScreen').then(m => ({ default: m.InsightsScreen })));
 
-export const router = createBrowserRouter([
+// the artifact build lives at a URL it doesn't control, so it keeps routes in memory
+const createRouter = import.meta.env.MODE === 'artifact' ? createMemoryRouter : createBrowserRouter;
+
+export const router = createRouter([
   {
     element: <Root />,
     children: [
