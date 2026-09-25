@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Fonts bundled for offline use; both cover Latin + Devanagari */
+@import '@fontsource/baloo-2/latin-600.css';
+@import '@fontsource/baloo-2/latin-ext-600.css';
+@import '@fontsource/baloo-2/devanagari-600.css';
+@import '@fontsource/mukta/400.css';
+@import '@fontsource/mukta/500.css';
+@import '@fontsource/mukta/600.css';
+
+/* Map tokens into the Tailwind theme: bg-bg, text-ink, bg-period-tint, font-display, ... */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-period: var(--period);
+  --color-period-tint: var(--period-tint);
+  --color-fertile: var(--fertile);
+  --color-fertile-tint: var(--fertile-tint);
+  --color-flag: var(--flag);
+  --color-flag-tint: var(--flag-tint);
+
+  --color-rani: var(--bangle-rani);
+  --color-haldi: var(--bangle-haldi);
+  --color-mehendi: var(--bangle-mehendi);
+  --color-narangi: var(--bangle-narangi);
+  --color-aasmani: var(--bangle-aasmani);
+  --color-jamuni: var(--bangle-jamuni);
+  --color-kattha: var(--bangle-kattha);
+  --color-sleti: var(--bangle-sleti);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --ease-out: var(--ease-out);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}

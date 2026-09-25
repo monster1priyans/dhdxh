@@ -1,0 +1,78 @@
+/* Design tokens. Components use these (via Tailwind theme names), never raw hex. */
+:root {
+  color-scheme: light;
+  --bg: #F3F2F7;
+  --surface: #FFFFFF;
+  --ink: #211C2E;
+  --ink-2: #5E5870;
+  --line: #E3E0EA;
+  --primary: #3B3486;
+  --on-primary: #FFFFFF;
+  --period: #C3303F;
+  --period-tint: #F6D9DC;
+  --fertile: #0E7C7B;
+  --fertile-tint: #D3ECEA;
+  --flag: #8C5B00;
+  --flag-tint: #FBEFD5;
+
+  /* bangle colours: never red or teal (those mean period and fertile) */
+  --bangle-rani: #B0187A;
+  --bangle-haldi: #C98A00;
+  --bangle-mehendi: #5E7D22;
+  --bangle-narangi: #D8641B;
+  --bangle-aasmani: #2B7BB9;
+  --bangle-jamuni: #7040A0;
+  --bangle-kattha: #8A4B2A;
+  --bangle-sleti: #56607A;
+
+  --font-display: 'Baloo 2', system-ui, sans-serif;
+  --font-body: 'Mukta', system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-feedback: 200ms;
+  --dur-signature: 400ms;
+}
+
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #16131F;
+  --surface: #211D2C;
+  --ink: #EEEAF6;
+  --ink-2: #A9A3B8;
+  --line: #332E40;
+  --primary: #A9A2FF;
+  --on-primary: #16131F;
+  --period: #F0717D;
+  --period-tint: #4A1F26;
+  --fertile: #4CC3BF;
+  --fertile-tint: #173B3A;
+  --flag: #E6B34D;
+  --flag-tint: #3A2C10;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #16131F;
+    --surface: #211D2C;
+    --ink: #EEEAF6;
+    --ink-2: #A9A3B8;
+    --line: #332E40;
+    --primary: #A9A2FF;
+    --on-primary: #16131F;
+    --period: #F0717D;
+    --period-tint: #4A1F26;
+    --fertile: #4CC3BF;
+    --fertile-tint: #173B3A;
+    --flag: #E6B34D;
+    --flag-tint: #3A2C10;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-feedback: 0ms;
+    --dur-signature: 0ms;
+  }
+}

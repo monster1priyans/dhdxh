@@ -1,0 +1,40 @@
+{
+  "app": { "name": "Ritu" },
+  "tabs": {
+    "home": "Home",
+    "calendar": "Calendar",
+    "insights": "Insights",
+    "circle": "Circle",
+    "settings": "Settings",
+    "label": "Main"
+  },
+  "setup": {
+    "loading": "Opening Ritu",
+    "needsNetworkTitle": "Connect to the internet once to finish setup",
+    "needsNetworkBody": "Ritu needs the internet only this first time. After that it works fully offline.",
+    "tryAgain": "Try again",
+    "errorTitle": "Setup didn't finish",
+    "errorBody": "Something went wrong while setting up this phone. Check your connection and try again.",
+    "notConfiguredTitle": "Firebase isn't set up yet",
+    "notConfiguredBody": "Copy .env.example to .env and fill in your Firebase web app keys, then restart the app."
+  },
+  "home": {
+    "empty": "Add a profile to start.",
+    "emptyHint": "Each person on this phone gets her own profile, with an optional PIN."
+  },
+  "calendar": { "empty": "Add a profile to see her calendar." },
+  "insights": { "empty": "Insights appear after a few logged periods." },
+  "circle": { "empty": "Share a profile with family, or hand a profile over to her. Coming soon." },
+  "settings": {
+    "language": "Language",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "about": "About",
+    "version": "Version {{version}}"
+  },
+  "lang": { "en": "English", "hi": "हिंदी" },
+  "disclaimer": "Predictions are estimates, not medical advice and not birth control.",
+  "offline": "You're offline. Changes are saved on this phone."
+}
