@@ -40,18 +40,24 @@
   --ease-out: var(--ease-out);
 }
 
+/* Page ground and text stay unlayered on purpose: a host page (e.g. a sandboxed preview) may inject its
+   own unlayered body reset, and any layered rule would lose to it, leaving light text on a light page. */
+html {
+  background: var(--bg);
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
-  }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 1rem;
-    line-height: 1.5;
-    overflow-x: hidden;
   }
   h1, h2, h3 {
     font-family: var(--font-display);

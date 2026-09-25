@@ -12,8 +12,16 @@ export function storedTheme(): Theme {
 
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement;
-  if (theme === 'system') root.removeAttribute('data-theme');
-  else root.setAttribute('data-theme', theme);
+  if (theme === 'system') {
+    // only clear a theme we set ourselves; a host page may have stamped its own
+    if (root.dataset.themeOwner === 'ritu') {
+      root.removeAttribute('data-theme');
+      delete root.dataset.themeOwner;
+    }
+    return;
+  }
+  root.setAttribute('data-theme', theme);
+  root.dataset.themeOwner = 'ritu';
 }
 
 export function setTheme(theme: Theme): void {
