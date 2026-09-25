@@ -61,12 +61,29 @@
   },
   "actions": {
     "periodStarted": "पीरियड शुरू हुआ",
-    "periodEnded": "पीरियड खत्म हुआ"
+    "periodEnded": "पीरियड खत्म हुआ",
+    "startedOtherDay": "किसी और दिन शुरू हुआ",
+    "startedOtherDayFor": "{{name}}: पीरियड किसी और दिन शुरू हुआ"
+  },
+  "startDate": {
+    "title": "{{name}} का पीरियड कब शुरू हुआ?",
+    "label": "पीरियड का पहला दिन",
+    "save": "सेव करें और अनुमान देखें",
+    "quick": "जल्दी चुनें",
+    "today": "आज",
+    "yesterday": "कल",
+    "daysAgo_one": "{{count}} दिन पहले",
+    "daysAgo_other": "{{count}} दिन पहले",
+    "future": "आज या उससे पहले का दिन चुनें।",
+    "hint": "सेव करते ही ऋतु अगले पीरियड और फर्टाइल दिनों का अनुमान फिर से लगाता है।"
   },
   "toast": {
     "saved": "सेव हो गया",
     "periodStarted": "सेव हो गया: आज पीरियड शुरू हुआ",
-    "periodEnded": "सेव हो गया: आज पीरियड खत्म हुआ"
+    "periodEnded": "सेव हो गया: आज पीरियड खत्म हुआ",
+    "periodFrom": "सेव हो गया: पीरियड {{date}} को शुरू हुआ",
+    "nextLikely": "अगला पीरियड लगभग {{date}} को",
+    "alreadyPeriod": "यह दिन पहले से पीरियड में है"
   },
   "today": {
     "day": "दिन {{day}}",

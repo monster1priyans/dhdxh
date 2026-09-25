@@ -68,7 +68,7 @@ await shot('05-calendar-jan');
 
 await page.getByRole('link', { name: 'Home' }).click();
 await page.getByRole('button', { name: /Asha/ }).first().click();
-await page.getByText('Next periods').waitFor();
+await page.getByRole('heading', { name: 'Next periods' }).waitFor();
 const txt = await page.locator('main').innerText();
 if (!/Thu 16 July/.test(txt) || !txt.includes('± 1 day')) throw new Error('prediction not shown as expected:\n' + txt);
 ok('profile page: next period Thu 16 July, ± 1 day');
@@ -117,6 +117,17 @@ for (const d of '1234') await page.getByRole('button', { name: d, exact: true })
 await page.getByText('No periods logged yet').first().waitFor(); ok('right PIN unlocks');
 await shot('12-priya');
 
+// pick a start date: the prediction is recalculated and shown right away
+await page.getByRole('button', { name: 'Started on another day' }).click();
+await page.getByLabel('First day of the period').fill('2026-06-01');
+await page.getByRole('button', { name: 'Save and predict' }).click();
+await page.getByText("Saved: period started 1 Jun. Next period likely 29 Jun").waitFor();
+await page.getByText(/Day 20, period in 9 days/).first().waitFor();
+ok('start date picked: next period 29 Jun, status "Day 20, period in 9 days"');
+await page.getByRole('button', { name: 'Started on another day' }).waitFor();
+await shot('12b-start-date');
+
+
 // backup
 await page.getByRole('link', { name: 'Settings', exact: true }).click();
 const [bk] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Save backup' }).click()]);
@@ -132,7 +143,7 @@ await page.getByText('पीरियड चल रहा है, दिन 3').
 await shot('14-home-hi');
 await page.emulateMedia({ colorScheme: 'dark' });
 await page.getByRole('button', { name: /Asha/ }).first().click();
-await page.getByText('अगले पीरियड').waitFor();
+await page.getByRole('heading', { name: 'अगले पीरियड' }).waitFor();
 await shot('15-profile-hi-dark'); await noHScroll('profile hi');
 console.log(errors.length ? 'PAGE ERRORS:\n' + errors.join('\n') : '✓ no page errors');
 await browser.close();

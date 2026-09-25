@@ -61,12 +61,29 @@
   },
   "actions": {
     "periodStarted": "Period started",
-    "periodEnded": "Period ended"
+    "periodEnded": "Period ended",
+    "startedOtherDay": "Started on another day",
+    "startedOtherDayFor": "{{name}}: period started on another day"
+  },
+  "startDate": {
+    "title": "When did {{name}}’s period start?",
+    "label": "First day of the period",
+    "save": "Save and predict",
+    "quick": "Quick picks",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago",
+    "future": "Choose today or an earlier day.",
+    "hint": "Ritu recalculates the next periods and fertile days as soon as you save."
   },
   "toast": {
     "saved": "Saved",
     "periodStarted": "Saved: period started today",
-    "periodEnded": "Saved: period ended today"
+    "periodEnded": "Saved: period ended today",
+    "periodFrom": "Saved: period started {{date}}",
+    "nextLikely": "Next period likely {{date}}",
+    "alreadyPeriod": "That day is already part of a period"
   },
   "today": {
     "day": "Day {{day}}",

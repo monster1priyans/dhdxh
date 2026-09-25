@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Lock, Plus, UserPlus } from 'lucide-react';
+import { CalendarPlus, Lock, Plus, UserPlus } from 'lucide-react';
+import { useState } from 'react';
 import { localToday } from '../../../shared/engine';
 import type { PeriodRec, Profile } from '../../data/types';
 import { toEnginePeriods } from '../../data/periods';
@@ -14,6 +15,7 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { NearbyPeriodSheet } from '../log/NearbyPeriodSheet';
+import { StartDateSheet } from '../log/StartDateSheet';
 import { usePeriodActions } from '../log/usePeriodActions';
 
 export function HomeScreen() {
@@ -55,6 +57,7 @@ function Row({ profile, periods }: { profile: Profile; periods: PeriodRec[] }) {
   const actions = usePeriodActions(profile.id, periods);
   const today = localToday();
   const resetAt = pinState[profile.id]?.resetAt;
+  const [pickStart, setPickStart] = useState(false);
 
   if (locked) {
     return (
@@ -83,10 +86,17 @@ function Row({ profile, periods }: { profile: Profile; periods: PeriodRec[] }) {
         </span>
       </button>
       {profile.mode !== 'pregnant' && (
-        actions.ongoing
-          ? <Button variant="secondary" className="shrink-0 px-4 text-[0.9375rem]" onClick={() => void actions.end()}>{t('actions.periodEnded')}</Button>
-          : <Button className="shrink-0 px-4 text-[0.9375rem]" onClick={() => void actions.start()}>{t('actions.periodStarted')}</Button>
+        <div className="flex shrink-0 items-center gap-1">
+          {actions.ongoing
+            ? <Button variant="secondary" className="px-4 text-[0.9375rem]" onClick={() => void actions.end()}>{t('actions.periodEnded')}</Button>
+            : <Button className="px-4 text-[0.9375rem]" onClick={() => void actions.start()}>{t('actions.periodStarted')}</Button>}
+          <button type="button" onClick={() => setPickStart(true)} aria-label={t('actions.startedOtherDayFor', { name: profile.name })}
+            className="grid size-11 place-items-center rounded-full text-primary">
+            <CalendarPlus aria-hidden className="size-5" />
+          </button>
+        </div>
       )}
+      <StartDateSheet open={pickStart} name={profile.name} onClose={() => setPickStart(false)} onPick={d => actions.start(d)} />
       <NearbyPeriodSheet
         nearby={actions.ask?.nearby ?? null}
         onEdit={() => void actions.resolve(true)} onNew={() => void actions.resolve(false)} onClose={actions.cancelAsk}

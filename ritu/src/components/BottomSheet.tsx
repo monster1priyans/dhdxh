@@ -33,8 +33,8 @@ export function BottomSheet({ open, onClose, title, children, footer }: Props) {
           <X aria-hidden className="size-5" />
         </button>
       </header>
-      <div className="flex-1 overflow-y-auto px-4 py-4">{children}</div>
-      {footer && <footer className="border-t border-line px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{footer}</footer>}
+      <div className="flex-1 overflow-y-auto px-4 py-4">{open && children}</div>
+      {open && footer && <footer className="border-t border-line px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{footer}</footer>}
     </dialog>
   );
 }

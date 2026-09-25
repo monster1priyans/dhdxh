@@ -22,6 +22,7 @@ import { PinGate } from '../../components/PinGate';
 import { FLOWS, LogSheet } from '../log/LogSheet';
 import { MOOD_ICONS, SYMPTOM_ICONS } from '../log/icons';
 import { NearbyPeriodSheet } from '../log/NearbyPeriodSheet';
+import { StartDateSheet } from '../log/StartDateSheet';
 import { usePeriodActions } from '../log/usePeriodActions';
 
 export function ProfileScreen() {
@@ -45,6 +46,7 @@ function Today({ pid }: { pid: string }) {
   const actions = usePeriodActions(pid, periods);
   const [logDate, setLogDate] = useState<ISODate | null>(null);
   const [endAsk, setEndAsk] = useState(false);
+  const [pickStart, setPickStart] = useState(false);
   const today = localToday();
 
   const ps = useMemo(() => toEnginePeriods(periods), [periods]);
@@ -104,9 +106,12 @@ function Today({ pid }: { pid: string }) {
         </BangleRing>
 
         {profile.mode !== 'pregnant' && (
-          actions.ongoing
-            ? <Button variant="secondary" onClick={() => void actions.end()}>{t('actions.periodEnded')}</Button>
-            : <Button onClick={() => void actions.start()}>{t('actions.periodStarted')}</Button>
+          <div className="flex flex-col items-center gap-1">
+            {actions.ongoing
+              ? <Button variant="secondary" onClick={() => void actions.end()}>{t('actions.periodEnded')}</Button>
+              : <Button onClick={() => void actions.start()}>{t('actions.periodStarted')}</Button>}
+            <Button variant="ghost" onClick={() => setPickStart(true)}>{t('actions.startedOtherDay')}</Button>
+          </div>
         )}
       </section>
 
@@ -162,6 +167,7 @@ function Today({ pid }: { pid: string }) {
       )}
 
       <LogSheet profile={profile} periods={periods} date={logDate} onClose={() => setLogDate(null)} />
+      <StartDateSheet open={pickStart} name={profile.name} onClose={() => setPickStart(false)} onPick={d => actions.start(d)} />
       <NearbyPeriodSheet nearby={actions.ask?.nearby ?? null} onEdit={() => void actions.resolve(true)} onNew={() => void actions.resolve(false)} onClose={actions.cancelAsk} />
       {actions.ongoing && (
         <EndDateSheet
