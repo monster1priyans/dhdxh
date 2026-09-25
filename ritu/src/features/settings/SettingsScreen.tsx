@@ -60,7 +60,8 @@ export function SettingsScreen() {
       </Section>
       <Section>
         <h2 className="mb-2 text-xl text-ink">{t('settings.about')}</h2>
-        <p className="text-ink-2">{t('disclaimer')}</p>
+        <p className="text-ink-2">{t('privacy')}</p>
+        <p className="mt-2 text-ink-2">{t('disclaimer')}</p>
         <p className="mt-2 text-sm text-ink-2">{t('settings.version', { version: __APP_VERSION__ })}</p>
       </Section>
     </>

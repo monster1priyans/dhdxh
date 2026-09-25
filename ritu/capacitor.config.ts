@@ -6,11 +6,6 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   android: { allowMixedContent: false },
   plugins: {
-    FirebaseAuthentication: {
-      // native sign-in only returns the Google idToken; the JS SDK links it
-      skipNativeAuth: true,
-      providers: ['google.com'],
-    },
     LocalNotifications: {
       iconColor: '#3B3486',
     },

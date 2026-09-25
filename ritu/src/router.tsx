@@ -3,7 +3,7 @@ import { AppShell } from './features/shell/AppShell';
 import { HomeScreen } from './features/home/HomeScreen';
 import { CalendarScreen } from './features/calendar/CalendarScreen';
 import { InsightsScreen } from './features/insights/InsightsScreen';
-import { CircleScreen } from './features/circle/CircleScreen';
+import { ProfilesScreen } from './features/profiles/ProfilesScreen';
 import { SettingsScreen } from './features/settings/SettingsScreen';
 
 export const router = createBrowserRouter([
@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomeScreen /> },
       { path: 'calendar', element: <CalendarScreen /> },
       { path: 'insights', element: <InsightsScreen /> },
-      { path: 'circle', element: <CircleScreen /> },
+      { path: 'profiles', element: <ProfilesScreen /> },
       { path: 'settings', element: <SettingsScreen /> },
       { path: '*', element: <HomeScreen /> },
     ],

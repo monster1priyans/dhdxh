@@ -4,10 +4,4 @@ dev-dist
 .env
 .env.local
 *.log
-.firebase
-firebase-debug.log*
-firestore-debug.log*
-ui-debug.log*
-/android/app/google-services.json
 /android/app/release
-.env.emulator

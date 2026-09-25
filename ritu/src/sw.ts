@@ -12,5 +12,3 @@ registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')));
 
 void self.skipWaiting();
 clientsClaim();
-
-// M6: the Firebase Messaging background handler goes here (one service worker only).

@@ -6,7 +6,7 @@ const TABS: { to: string; key: string; icon: LucideIcon }[] = [
   { to: '/', key: 'home', icon: House },
   { to: '/calendar', key: 'calendar', icon: CalendarDays },
   { to: '/insights', key: 'insights', icon: BarChart3 },
-  { to: '/circle', key: 'circle', icon: Users },
+  { to: '/profiles', key: 'profiles', icon: Users },
   { to: '/settings', key: 'settings', icon: Settings },
 ];
 
