@@ -18,6 +18,7 @@ import { BangleRing } from '../../components/BangleRing';
 import { BottomSheet } from '../../components/BottomSheet';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
+import { LearnLink } from '../../components/LearnLink';
 import { PinGate } from '../../components/PinGate';
 import { FLOWS, LogSheet } from '../log/LogSheet';
 import { MOOD_ICONS, SYMPTOM_ICONS } from '../log/icons';
@@ -165,6 +166,8 @@ function Today({ pid }: { pid: string }) {
           {profile.showFertility && <p className="mt-2 text-sm text-ink-2">{t('disclaimer')}</p>}
         </section>
       )}
+
+      <LearnLink className="mx-4 mt-4" />
 
       <LogSheet profile={profile} periods={periods} date={logDate} onClose={() => setLogDate(null)} />
       <StartDateSheet open={pickStart} name={profile.name} onClose={() => setPickStart(false)} onPick={d => actions.start(d)} />

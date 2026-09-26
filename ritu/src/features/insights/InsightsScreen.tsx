@@ -17,6 +17,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { PinGate } from '../../components/PinGate';
 import { ProfilePicker } from '../../components/ProfilePicker';
 import { ScreenHeader } from '../../components/ScreenHeader';
+import { LearnLink } from '../../components/LearnLink';
 import { useDoctorReport } from './useDoctorReport';
 
 export function InsightsScreen() {
@@ -122,6 +123,7 @@ function Insights({ profile }: { profile: Profile }) {
           <FileText aria-hidden className="size-4" />{t('insights.report')}
         </Button>
       </div>
+      <LearnLink className="mx-4" />
       <p className="mx-4 text-sm text-ink-2">{t('disclaimer')}</p>
 
       <BottomSheet open={flag !== null} onClose={() => setFlag(null)} title={flag ? t(`flag.${flag.type}.title`, { date: flag.date ? formatDate(flag.date) : '' }) : ''}

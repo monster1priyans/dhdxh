@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, DatabaseBackup, Upload } from 'lucide-react';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { Button } from '../../components/Button';
+import { LearnLink } from '../../components/LearnLink';
 import { ConfirmSheet } from '../../components/ConfirmSheet';
 import { currentLocale, setLang, type Lang } from '../../i18n';
 import { setTheme, storedTheme, type Theme } from '../../lib/theme';
@@ -109,6 +110,8 @@ export function SettingsScreen() {
           <Button variant="secondary" onClick={() => void chooseRestore()}><Upload aria-hidden className="size-4" />{t('backup.restore')}</Button>
         </div>
       </Section>
+
+      <LearnLink className="mx-4 mb-4" />
 
       <Section title={t('settings.about')}>
         <p className="text-ink-2">{t('privacy')}</p>

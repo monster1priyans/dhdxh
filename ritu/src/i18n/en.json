@@ -35,6 +35,10 @@
   },
   "disclaimer": "Predictions are estimates, not medical advice and not birth control.",
   "privacy": "Everything stays on this phone. No account, no internet, nothing is shared.",
+  "learn": {
+    "link": "How the cycle works",
+    "linkHint": "Phases, hormones, fertility and when to see a doctor"
+  },
   "home": {
     "empty": "Add a profile to start.",
     "addProfile": "Add a profile",

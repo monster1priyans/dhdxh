@@ -136,6 +136,19 @@ if (b.profiles.length !== 2 || b.profiles[0].periods.length !== 7) throw new Err
 ok('backup file has 2 profiles, 7 periods for Asha');
 await shot('13-settings');
 
+// cycle guide
+await page.getByRole('link', { name: /How the cycle works/ }).click();
+await page.getByRole('heading', { name: 'How the menstrual cycle works' }).waitFor();
+await page.getByRole('region', { name: 'Swipe sideways to see all columns.' }).getByRole('table').waitFor();
+await noHScroll('learn');
+await page.getByRole('button', { name: '7. When to seek medical care' }).click();
+await page.getByRole('heading', { name: '7. When to seek medical care' }).waitFor();
+ok('cycle guide opens, timeline table present, no sideways page scroll');
+await shot('13b-learn');
+await page.getByRole('button', { name: 'Back' }).first().click();
+await page.getByRole('heading', { name: 'Settings' }).waitFor();
+
+
 // Hindi + dark
 await page.getByText('हिंदी').click();
 await page.getByRole('link', { name: 'होम' }).click();
