@@ -143,7 +143,9 @@ await page.getByRole('region', { name: 'Swipe sideways to see all columns.' }).g
 await noHScroll('learn');
 await page.getByRole('button', { name: '7. When to seek medical care' }).click();
 await page.getByRole('heading', { name: '7. When to seek medical care' }).waitFor();
-ok('cycle guide opens, timeline table present, no sideways page scroll');
+await page.getByRole('button', { name: 'Stage by stage' }).click();
+await page.getByRole('heading', { name: 'Around Day 14: Ovulation; an egg is released from an ovary.' }).waitFor();
+ok('cycle guide opens: timeline table, 7 detailed stages, no sideways page scroll');
 await shot('13b-learn');
 await page.getByRole('button', { name: 'Back' }).first().click();
 await page.getByRole('heading', { name: 'Settings' }).waitFor();

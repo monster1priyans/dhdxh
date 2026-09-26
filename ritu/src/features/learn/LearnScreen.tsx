@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, CircleAlert, Info } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { LEARN, type Field, type Segment } from './content';
+import { STAGES, type Stage } from './stages';
 
 const TONE: Record<Segment['tone'], string> = {
   period: 'bg-period text-white',
@@ -55,14 +56,33 @@ function Track({ label, segments, dayLabel }: { label: string; segments: Segment
   );
 }
 
+function MiniBar({ stage, dayLabel }: { stage: Stage; dayLabel: string }) {
+  return (
+    <div aria-hidden className="flex flex-col gap-0.5">
+      <div className="grid h-2.5 gap-px" style={{ gridTemplateColumns: 'repeat(28, minmax(0, 1fr))' }}>
+        {Array.from({ length: 28 }, (_, i) => {
+          const d = i + 1;
+          const on = d >= stage.from && d <= stage.to;
+          const maybe = stage.maybe === d;
+          return <span key={d} className={`rounded-[1px] ${on ? 'bg-primary' : maybe ? 'bg-primary/40' : 'bg-line'}`} />;
+        })}
+      </div>
+      <div className="flex justify-between text-[0.6875rem] text-ink-2 tabular-nums"><span>{dayLabel} 1</span><span>14</span><span>28</span></div>
+    </div>
+  );
+}
+
 export function LearnScreen() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const c = LEARN[i18n.language === 'hi' ? 'hi' : 'en'];
+  const lang = i18n.language === 'hi' ? 'hi' : 'en';
+  const c = LEARN[lang];
+  const st = STAGES[lang];
 
   const toc = [
     { id: 'overview', title: c.overview.title },
     { id: 'timeline', title: c.timeline.title },
+    { id: 'stages', title: st.title },
     { id: 'phases', title: c.phasesTitle },
     { id: 'outcomes', title: c.outcomes.title },
     { id: 'hormones', title: c.hormones.title },
@@ -141,6 +161,23 @@ export function LearnScreen() {
           </table>
         </div>
       </Card>
+
+      <section id="stages" aria-labelledby="stages-h" className="scroll-mt-4">
+        <h2 id="stages-h" className="mx-4 mb-1 text-xl">{st.title}</h2>
+        <p className="mx-4 mb-3 max-w-prose text-ink-2">{st.intro}</p>
+        <ol className="flex flex-col">
+          {st.items.map(stage => (
+            <li key={stage.id} className="mx-4 mb-4 flex flex-col gap-3 rounded-2xl bg-surface p-4">
+              <div className="flex flex-col gap-2">
+                <span className="self-start rounded-full bg-primary px-3 py-0.5 text-sm font-medium text-on-primary tabular-nums">{stage.days}</span>
+                <h3 id={`stage-${stage.id}-h`} className="font-display text-lg font-semibold text-balance">{stage.headline}</h3>
+                <MiniBar stage={stage} dayLabel={st.dayLabel} />
+              </div>
+              <Fields fields={stage.fields} />
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <section id="phases" aria-labelledby="phases-h" className="scroll-mt-4">
         <h2 id="phases-h" className="mx-4 mb-3 text-xl">{c.phasesTitle}</h2>
