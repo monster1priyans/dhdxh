@@ -32,3 +32,14 @@ export async function deletePeriod(id: string): Promise<void> {
   await db.delete('periods', id);
   emitChange('periods', cur.pid);
 }
+
+/** Put a profile's periods back exactly as they were (used by Undo). */
+export async function replacePeriods(pid: string, recs: PeriodRec[]): Promise<void> {
+  const db = await getDb();
+  const tx = db.transaction('periods', 'readwrite');
+  const store = tx.objectStore('periods');
+  for (const cur of await store.index('pid').getAll(pid)) await store.delete(cur.id);
+  for (const rec of recs) await store.put(rec);
+  await tx.done;
+  emitChange('periods', pid);
+}

@@ -1,17 +1,20 @@
 import type { TFunction } from 'i18next';
 import {
-  addDays, dayInfo, diffDays, sortPeriods, todayStatus,
+  addDays, dayInfo, diffDays, localToday, sortPeriods, todayStatus,
   type ISODate, type Period, type TodayStatus,
 } from '../../shared/engine';
 import type { Profile } from '../data/types';
+import { gestation } from './pregnancy';
 
 export function statusOf(profile: Profile, periods: Period[], today: ISODate): TodayStatus {
   return todayStatus(today, periods, profile.prediction, profile.settings.lutealLen);
 }
 
 /** "Day 12, period in 16 days" / "Period expected any day" / "Period is 3 days late" / "On period, day 2" */
-export function statusLine(t: TFunction, profile: Profile, st: TodayStatus, hasPeriods: boolean): string {
-  if (profile.mode === 'pregnant') return t('status.paused');
+export function statusLine(t: TFunction, profile: Profile, st: TodayStatus, hasPeriods: boolean, today: ISODate = localToday()): string {
+  if (profile.mode === 'pregnant') {
+    return profile.dueDate ? t('status.pregnant', { week: gestation(profile.dueDate, today).weeks + 1 }) : t('status.paused');
+  }
   if (!hasPeriods) return t('status.noData');
   switch (st.state) {
     case 'on_period': return t('status.onPeriod', { day: st.cycleDay });

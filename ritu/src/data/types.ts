@@ -6,11 +6,23 @@ export type BangleColour = (typeof BANGLE_COLOURS)[number];
 export const SYMPTOMS = [
   'cramps', 'headache', 'backache', 'bloating', 'acne', 'breast_tenderness',
   'fatigue', 'nausea', 'cravings', 'insomnia', 'dizziness', 'upset_stomach',
+  'constipation', 'hot_flashes', 'joint_pain',
 ] as const;
 export type Symptom = (typeof SYMPTOMS)[number];
 
-export const MOODS = ['happy', 'calm', 'energetic', 'sensitive', 'sad', 'irritable', 'anxious'] as const;
+export const MOODS = ['happy', 'calm', 'energetic', 'sensitive', 'sad', 'irritable', 'anxious', 'stressed'] as const;
 export type Mood = (typeof MOODS)[number];
+
+export const DISCHARGES = ['dry', 'sticky', 'creamy', 'watery', 'egg_white', 'unusual'] as const;
+export type Discharge = (typeof DISCHARGES)[number];
+
+/** Allowed ranges for numbers she types in (also used to validate backups). */
+export const RANGES = {
+  bbt: { min: 35, max: 38 },      // °C
+  weight: { min: 20, max: 250 },  // kg
+  sleep: { min: 0, max: 24 },     // hours
+  water: { min: 0, max: 30 },     // glasses
+} as const;
 
 /** Timestamps are epoch milliseconds; cycle dates are always "YYYY-MM-DD" strings. */
 export interface Profile {
@@ -25,6 +37,10 @@ export interface Profile {
   discreet: boolean;
   settings: CycleSettings;
   prediction: Prediction | null;
+  /** adds "Taken / Missed" to the daily log */
+  trackPill: boolean;
+  /** pregnancy mode: expected due date */
+  dueDate: ISODate | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -47,6 +63,11 @@ export interface LogRec {
   notes: string;
   bbt: number | null; // °C
   lhTest: 'positive' | 'negative' | null;
+  discharge: Discharge | null;
+  pill: 'taken' | 'missed' | null;
+  sleep: number | null; // hours
+  water: number | null; // glasses
+  weight: number | null; // kg
   updatedAt: number;
 }
 

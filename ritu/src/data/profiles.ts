@@ -1,23 +1,25 @@
 import { DEFAULTS } from '../../shared/engine';
 import { emitChange, getDb, PROFILE_STORES } from './db';
 import type { Profile } from './types';
+import { normalizeProfile } from './normalize';
 
 export type NewProfile = Pick<Profile, 'name' | 'colour'> & Partial<Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>>;
 
 export async function listProfiles(): Promise<Profile[]> {
-  const all = await (await getDb()).getAll('profiles');
+  const all = (await (await getDb()).getAll('profiles')).map(p => normalizeProfile(p as unknown as Record<string, unknown>));
   return all.sort((a, b) => a.createdAt - b.createdAt || a.name.localeCompare(b.name));
 }
 
 export async function getProfile(id: string): Promise<Profile | undefined> {
-  return (await getDb()).get('profiles', id);
+  const p = await (await getDb()).get('profiles', id);
+  return p ? normalizeProfile(p as unknown as Record<string, unknown>) : undefined;
 }
 
 export async function createProfile(p: NewProfile): Promise<Profile> {
   const now = Date.now();
   const profile: Profile = {
     birthYear: null, mode: 'track', isManaged: false, showFertility: false, discreet: true,
-    settings: { ...DEFAULTS }, prediction: null,
+    settings: { ...DEFAULTS }, prediction: null, trackPill: false, dueDate: null,
     ...p,
     id: crypto.randomUUID(), createdAt: now, updatedAt: now,
   };
@@ -29,8 +31,9 @@ export async function createProfile(p: NewProfile): Promise<Profile> {
 export async function updateProfile(id: string, patch: Partial<Omit<Profile, 'id' | 'createdAt'>>): Promise<Profile> {
   const db = await getDb();
   const tx = db.transaction('profiles', 'readwrite');
-  const cur = await tx.store.get(id);
-  if (!cur) throw new Error(`Profile ${id} not found`);
+  const found = await tx.store.get(id);
+  if (!found) throw new Error(`Profile ${id} not found`);
+  const cur = normalizeProfile(found as unknown as Record<string, unknown>);
   const next: Profile = { ...cur, ...patch, id, createdAt: cur.createdAt, updatedAt: Date.now() };
   await tx.store.put(next);
   await tx.done;

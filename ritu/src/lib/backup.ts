@@ -3,10 +3,11 @@ import { listLogs, listPrivate } from '../data/logs';
 import { listPeriods } from '../data/periods';
 import { getProfile } from '../data/profiles';
 import { listReminders } from '../data/reminders';
-import { BANGLE_COLOURS, type LogRec, type PeriodRec, type PrivateRec, type Profile, type ReminderRec } from '../data/types';
+import { BANGLE_COLOURS, type PeriodRec, type PrivateRec, type Profile, type ReminderRec } from '../data/types';
+import { normalizeLog, normalizeProfile } from '../data/normalize';
 import type { ProfileExport } from './export';
 
-export interface Backup { app: 'ritu'; version: 1; exportedAt: string; profiles: ProfileExport[] }
+export interface Backup { app: 'ritu'; version: 2; exportedAt: string; profiles: ProfileExport[] }
 
 export async function exportProfile(pid: string, includePrivate: boolean): Promise<ProfileExport> {
   const profile = await getProfile(pid);
@@ -26,7 +27,7 @@ export async function buildBackup(pids: string[], privateFor: (p: Profile) => bo
     const p = await getProfile(pid);
     if (p) profiles.push(await exportProfile(pid, privateFor(p)));
   }
-  return { app: 'ritu', version: 1, exportedAt: new Date().toISOString(), profiles };
+  return { app: 'ritu', version: 2, exportedAt: new Date().toISOString(), profiles };
 }
 
 // ---- validation: a backup file is untrusted input ----
@@ -55,28 +56,20 @@ export function parseBackup(text: string): Backup {
     if (!isObj(e) || !checkProfile(e.profile)) throw new Error('bad_profile');
     const pid = e.profile.id;
     const periods = arr(e.periods).filter((p): p is PeriodRec => isObj(p) && isStr(p.id) && isDate(p.startDate) && (p.endDate === null || isDate(p.endDate)));
-    const logs = arr(e.logs).filter((l): l is LogRec => isObj(l) && isDate(l.date) && Array.isArray(l.symptoms));
+    const logs = arr(e.logs).filter((l): l is Record<string, unknown> => isObj(l) && isDate(l.date));
     const priv = arr(e.private).filter((l): l is PrivateRec => isObj(l) && isDate(l.date));
     const reminders = arr(e.reminders).filter((r): r is ReminderRec => isObj(r) && isStr(r.type) && isStr(r.time));
     const now = Date.now();
     return {
-      profile: {
-        ...e.profile, birthYear: typeof e.profile.birthYear === 'number' ? e.profile.birthYear : null,
-        isManaged: Boolean(e.profile.isManaged), showFertility: Boolean(e.profile.showFertility),
-        discreet: e.profile.discreet !== false, prediction: null,
-        createdAt: typeof e.profile.createdAt === 'number' ? e.profile.createdAt : now, updatedAt: now,
-      },
+      profile: { ...normalizeProfile(e.profile as unknown as Record<string, unknown>), prediction: null, updatedAt: now },
       periods: periods.map(p => ({ id: p.id, pid, startDate: p.startDate, endDate: p.endDate, updatedAt: now })),
-      logs: logs.map(l => ({
-        pid, date: l.date, flow: l.flow ?? null, symptoms: l.symptoms, mood: l.mood ?? null, pain: l.pain ?? null,
-        notes: isStr(l.notes) ? l.notes : '', bbt: l.bbt ?? null, lhTest: l.lhTest ?? null, updatedAt: now,
-      })),
+      logs: logs.map(l => ({ ...normalizeLog(l, pid), updatedAt: now })),
       private: priv.map(p => ({ pid, date: p.date, intimacy: p.intimacy ?? null, pregnancyTest: p.pregnancyTest ?? null, note: isStr(p.note) ? p.note : '', updatedAt: now })),
       reminders: reminders.map(r => ({ ...r, pid, id: `${pid}:${r.type}` })),
     };
   });
   if (!profiles.length) throw new Error('empty');
-  return { app: 'ritu', version: 1, exportedAt: isStr(raw.exportedAt) ? raw.exportedAt : '', profiles };
+  return { app: 'ritu', version: 2, exportedAt: isStr(raw.exportedAt) ? raw.exportedAt : '', profiles };
 }
 
 /** Writes a backup into this phone. A profile already here with the same id is replaced. */

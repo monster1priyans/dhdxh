@@ -2,7 +2,7 @@
 import { computePrediction, type ISODate } from '../../shared/engine';
 import { rescheduleAll } from '../lib/notifications';
 import type { PeriodOp } from '../lib/periodRules';
-import { addPeriod, deletePeriod, listPeriods, toEnginePeriods, updatePeriod } from './periods';
+import { addPeriod, deletePeriod, listPeriods, replacePeriods, toEnginePeriods, updatePeriod } from './periods';
 import { createProfile, getProfile, updateProfile, type NewProfile } from './profiles';
 import { createDefaultReminders } from './reminders';
 import type { Profile } from './types';
@@ -29,6 +29,16 @@ export async function applyPeriodOp(pid: string, op: PeriodOp): Promise<void> {
   }
   await recompute(pid);
   void rescheduleAll();
+}
+
+/** Remember a profile's periods now; the returned function puts them back (for "Undo"). */
+export async function snapshotPeriods(pid: string): Promise<() => Promise<void>> {
+  const saved = await listPeriods(pid);
+  return async () => {
+    await replacePeriods(pid, saved);
+    await recompute(pid);
+    void rescheduleAll();
+  };
 }
 
 export async function changeProfile(pid: string, patch: Partial<Omit<Profile, 'id' | 'createdAt'>>): Promise<void> {

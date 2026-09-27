@@ -126,6 +126,10 @@ await page.getByText(/Day 20, period in 9 days/).first().waitFor();
 ok('start date picked: next period 29 Jun, status "Day 20, period in 9 days"');
 await page.getByRole('button', { name: 'Started on another day' }).waitFor();
 await shot('12b-start-date');
+await page.getByRole('button', { name: 'Undo' }).click();
+await page.getByText('Undone', { exact: true }).waitFor();
+await page.getByText('No periods logged yet').first().waitFor();
+ok('undo removes the period that was just added');
 
 
 // backup
@@ -151,6 +155,72 @@ await page.getByRole('button', { name: 'Back' }).first().click();
 await page.getByRole('heading', { name: 'Settings' }).waitFor();
 
 
+// Home: the next two weeks for everyone unlocked
+await page.getByRole('link', { name: 'Home' }).click();
+await page.getByRole('heading', { name: 'Next 2 weeks' }).waitFor();
+await shot('13c-home-coming-up'); ok('home: "Next 2 weeks" card');
+
+// period history: add with validation, delete with undo
+await page.getByRole('button', { name: /Asha/ }).first().click();
+await page.getByRole('link', { name: /All periods/ }).click();
+await page.getByRole('heading', { name: "Asha's periods" }).waitFor();
+const rowCount = () => page.getByRole('button', { name: /^Delete period .+/ }).count();
+if (await rowCount() !== 7) throw new Error('history rows: ' + await rowCount());
+await page.getByRole('button', { name: 'Add a past period' }).click();
+await page.getByLabel('First day', { exact: true }).fill('2026-05-21');
+await page.getByText('These dates overlap another period').waitFor();
+await page.getByLabel('First day', { exact: true }).fill('2026-06-25');
+await page.getByText('Dates cannot be in the future.').waitFor();
+ok('history: overlap and future dates are refused with a message');
+await page.getByRole('button', { name: 'Close' }).click();
+await shot('13d-history'); await noHScroll('history');
+await page.getByRole('button', { name: /^Delete period .+/ }).first().click();
+await page.getByRole('button', { name: 'Delete period', exact: true }).click();
+await page.getByText('Period deleted').waitFor();
+if (await rowCount() !== 6) throw new Error('delete did not remove a row');
+await page.getByRole('button', { name: 'Undo' }).click();
+await page.getByText('Undone', { exact: true }).waitFor();
+await page.waitForTimeout(200);
+if (await rowCount() !== 7) throw new Error('undo did not restore the period');
+ok('history: delete, then undo restores it');
+await page.getByRole('button', { name: 'Back' }).first().click();
+
+// log sheet: body fields refuse numbers out of range
+await page.getByRole('button', { name: 'Log more' }).click();
+await page.getByLabel('Sleep').fill('30');
+await page.getByText('Enter a number from 0 to 24.').waitFor();
+if (await page.getByRole('button', { name: 'Save' }).isEnabled()) throw new Error('save should wait for a valid number');
+await page.getByLabel('Sleep').fill('7.5');
+await page.getByRole('button', { name: 'Egg-white (clear, stretchy)' }).click();
+await page.getByRole('button', { name: 'Save' }).click();
+await page.getByText('Saved', { exact: true }).waitFor();
+ok('log sheet: sleep out of range blocks saving; 7.5 h saves');
+
+// trying to conceive, then pregnancy, then back to tracking
+const mode = async name => {
+  await page.getByRole('link', { name: 'Profile settings' }).click();
+  await page.getByRole('radio', { name: new RegExp('^' + name) }).click();
+  await page.getByRole('button', { name: 'Back' }).first().click();
+};
+await mode('Trying to conceive');
+await page.getByRole('heading', { name: 'Fertility today' }).waitFor();
+await shot('13e-ttc'); ok('TTC: "Fertility today" card');
+await mode('Pregnant');
+await page.getByRole('button', { name: 'Add due date' }).click();
+await page.getByText('Due date: 25 March 2027').waitFor(); // suggested from her last period
+await page.getByRole('button', { name: 'I know the due date' }).click();
+await page.getByLabel('Due date given by the doctor').fill('2026-12-01');
+await page.getByRole('button', { name: 'Save' }).click();
+await page.getByText('16 weeks 4 days').waitFor();
+await page.getByText('Week 17').first().waitFor();
+await shot('13f-pregnancy'); await noHScroll('pregnancy'); ok('pregnancy: 16 weeks 4 days, week 17, check-ups');
+await page.getByRole('button', { name: 'Pregnancy ended' }).click();
+await page.getByRole('button', { name: 'Back to tracking periods' }).click();
+await page.getByText('On period, day 3').first().waitFor();
+ok('pregnancy ended: back to tracking');
+await mode('Track periods');
+await page.getByRole('link', { name: 'Settings', exact: true }).click();
+
 // Hindi + dark
 await page.getByText('हिंदी').click();
 await page.getByRole('link', { name: 'होम' }).click();
@@ -160,5 +230,13 @@ await page.emulateMedia({ colorScheme: 'dark' });
 await page.getByRole('button', { name: /Asha/ }).first().click();
 await page.getByRole('heading', { name: 'अगले पीरियड' }).waitFor();
 await shot('15-profile-hi-dark'); await noHScroll('profile hi');
+
+// erase everything
+await page.getByRole('link', { name: 'सेटिंग्स', exact: true }).click();
+await page.getByRole('button', { name: 'सब कुछ मिटाएँ' }).click();
+await page.getByRole('checkbox').check();
+await page.getByRole('dialog').getByRole('button', { name: 'सब कुछ मिटाएँ' }).click();
+await page.waitForURL('**/onboarding');
+ok('erase everything returns to onboarding');
 console.log(errors.length ? 'PAGE ERRORS:\n' + errors.join('\n') : '✓ no page errors');
 await browser.close();

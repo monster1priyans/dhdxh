@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CircleAlert, Lock, PauseCircle, Plus, Settings } from 'lucide-react';
+import { ArrowLeft, Baby, ChevronRight, CircleAlert, History, Lock, PauseCircle, Plus, Settings } from 'lucide-react';
 import { diffDays, healthFlags, localToday, type ISODate } from '../../../shared/engine';
 import { ageOf, applyPeriodOp } from '../../data/actions';
 import { emptyLog, saveLog } from '../../data/logs';
@@ -25,6 +25,10 @@ import { MOOD_ICONS, SYMPTOM_ICONS } from '../log/icons';
 import { NearbyPeriodSheet } from '../log/NearbyPeriodSheet';
 import { StartDateSheet } from '../log/StartDateSheet';
 import { usePeriodActions } from '../log/usePeriodActions';
+import { FertilityCard } from '../ttc/FertilityCard';
+import { gestation } from '../../lib/pregnancy';
+import { PregnancyCard } from './PregnancyCard';
+import { TipCard } from './TipCard';
 
 export function ProfileScreen() {
   const { pid } = useParams();
@@ -71,6 +75,8 @@ function Today({ pid }: { pid: string }) {
     toast(t('toast.saved'));
   }
 
+  const g = profile.mode === 'pregnant' && profile.dueDate ? gestation(profile.dueDate, today) : null;
+  const lastStart = periods.length ? periods[periods.length - 1].startDate : null;
   const dayLabel = st.cycleDay !== null ? t('today.day', { day: st.cycleDay }) : null;
 
   return (
@@ -92,7 +98,13 @@ function Today({ pid }: { pid: string }) {
 
       <section className="flex flex-col items-center gap-4 px-4 pt-4">
         <BangleRing size={260} colour={profile.colour} model={model} animate={loaded} label={statusLine(t, profile, st, periods.length > 0)}>
-          {profile.mode === 'pregnant' ? (
+          {profile.mode === 'pregnant' && g ? (
+            <>
+              <Baby aria-hidden className="size-9 text-ink-2" />
+              <span className="font-display text-[2.75rem] leading-none font-semibold">{t('pregnancy.weekShort', { week: g.weeks + 1 })}</span>
+              <span className="mt-1 text-lg font-medium">{t('pregnancy.trimester', { n: g.trimester })}</span>
+            </>
+          ) : profile.mode === 'pregnant' ? (
             <>
               <PauseCircle aria-hidden className="size-10 text-ink-2" />
               <span className="mt-1 max-w-40 text-lg font-medium">{t('status.paused')}</span>
@@ -127,6 +139,8 @@ function Today({ pid }: { pid: string }) {
         </Banner>
       )}
 
+      {profile.mode === 'pregnant' && <PregnancyCard profile={profile} lastPeriod={lastStart} />}
+
       <section className="mx-4 mt-6 flex flex-col gap-4 rounded-2xl bg-surface p-4">
         <h2 className="text-xl">{t('today.quickLog')}</h2>
         <QuickRow label={t('log.flow')}>
@@ -141,10 +155,21 @@ function Today({ pid }: { pid: string }) {
         <QuickRow label={t('log.mood')}>
           {MOODS.map(m => <Chip key={m} icon={MOOD_ICONS[m]} label={t(`mood.${m}`)} selected={todayLog.mood === m} onToggle={() => void quick({ mood: todayLog.mood === m ? null : m })} />)}
         </QuickRow>
+        {profile.trackPill && (
+          <QuickRow label={t('log.pill')}>
+            {(['taken', 'missed'] as const).map(v => (
+              <Chip key={v} label={t(`log.pill_${v}`)} selected={todayLog.pill === v} onToggle={() => void quick({ pill: todayLog.pill === v ? null : v })} />
+            ))}
+          </QuickRow>
+        )}
         <Button variant="secondary" onClick={() => setLogDate(today)} className="self-start">
           <Plus aria-hidden className="size-4" />{t('today.logMore')}
         </Button>
       </section>
+
+      {profile.mode === 'ttc' && <FertilityCard profile={profile} periods={ps} logs={logs} today={today} />}
+
+      <TipCard profile={profile} st={st} today={today} />
 
       {pred && (
         <section className="mx-4 mt-4 rounded-2xl bg-surface p-4">
@@ -166,6 +191,15 @@ function Today({ pid }: { pid: string }) {
           {profile.showFertility && <p className="mt-2 text-sm text-ink-2">{t('disclaimer')}</p>}
         </section>
       )}
+
+      <Link to={`/p/${pid}/history`} className="mx-4 mt-4 flex min-h-14 items-center gap-3 rounded-2xl bg-surface px-4 py-3">
+        <History aria-hidden className="size-5 text-primary" />
+        <span className="flex-1">
+          <span className="block font-medium">{t('history.link')}</span>
+          <span className="block text-sm text-ink-2">{t('history.linkHint', { count: periods.length })}</span>
+        </span>
+        <ChevronRight aria-hidden className="size-5 text-ink-2" />
+      </Link>
 
       <LearnLink className="mx-4 mt-4" />
 

@@ -1,13 +1,19 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart3, ChevronRight, CircleAlert, FileText, Info } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { healthFlags, localToday, type HealthFlag } from '../../../shared/engine';
 import { ageOf } from '../../data/actions';
 import { toEnginePeriods } from '../../data/periods';
 import type { Profile } from '../../data/types';
 import { useProfileData } from '../../hooks/useProfileData';
-import { cycleBars, periodBars, symptomHeatmap, type CycleBar } from '../../lib/insights';
+import {
+  cycleBars, habits, MOOD_PHASES, moodsByPhase, periodBars, regularity, symptomHeatmap, topSymptoms, weightSeries,
+  type CycleBar, type Regularity,
+} from '../../lib/insights';
+import { cycleTemps, detectShift } from '../../lib/temp';
+import { TempChart } from '../../components/TempChart';
+import { MOOD_ICONS } from '../log/icons';
 import { formatDate, formatNumber } from '../../lib/format';
 import { useProfiles } from '../../store/profiles';
 import { usePrefs } from '../../store/prefs';
@@ -48,6 +54,12 @@ function Insights({ profile }: { profile: Profile }) {
   const cycles = cycleBars(ps, pred);
   const lens = periodBars(ps);
   const heat = useMemo(() => symptomHeatmap(ps, logs, today), [ps, logs, today]);
+  const reg = regularity(cycles, ageOf(profile));
+  const top = useMemo(() => topSymptoms(logs), [logs]);
+  const moods = useMemo(() => moodsByPhase(logs, ps, pred, profile.settings.lutealLen, today), [logs, ps, pred, profile.settings.lutealLen, today]);
+  const hab = useMemo(() => habits(logs, today), [logs, today]);
+  const weights = useMemo(() => weightSeries(logs, today), [logs, today]);
+  const temps = useMemo(() => cycleTemps(ps, logs, today), [ps, logs, today]);
   const [flag, setFlag] = useState<HealthFlag | null>(null);
   const report = useDoctorReport(profile);
 
@@ -72,6 +84,8 @@ function Insights({ profile }: { profile: Profile }) {
         <p className="col-span-2 text-sm text-ink-2">{t('insights.basedOn', { count: pred?.basedOn ?? 0 })}</p>
       </section>
 
+      <RegularityCard reg={reg} />
+
       {flags.length > 0 && (
         <section className="mx-4 rounded-2xl bg-surface p-4">
           <h2 className="mb-2 text-xl">{t('insights.flags')}</h2>
@@ -91,7 +105,7 @@ function Insights({ profile }: { profile: Profile }) {
         </section>
       )}
 
-      <Chart title={t('insights.cycleChart')} data={cycles} empty={t('insights.needTwo')} avg={pred?.avgCycle ?? null} />
+      <Chart title={t('insights.cycleChart')} data={cycles} empty={t('insights.needTwo')} avg={pred?.avgCycle ?? null} band />
       <Chart title={t('insights.periodChart')} data={lens} empty={t('insights.needEnded')} avg={pred?.avgPeriod ?? null} tone="period" />
 
       <section className="mx-4 rounded-2xl bg-surface p-4">
@@ -118,6 +132,86 @@ function Insights({ profile }: { profile: Profile }) {
         )}
       </section>
 
+      <section className="mx-4 rounded-2xl bg-surface p-4">
+        <h2 className="text-xl">{t('insights.topSymptoms')}</h2>
+        {top.items.length === 0 ? <p className="mt-2 text-ink-2">{t('insights.noSymptoms')}</p> : (
+          <>
+            <p className="mb-3 text-sm text-ink-2">{t('insights.topSymptomsHint', { count: top.loggedDays })}</p>
+            <ul className="flex flex-col gap-2">
+              {top.items.map(i => (
+                <li key={i.symptom} className="grid grid-cols-[minmax(0,7rem)_1fr_3rem] items-center gap-2">
+                  <span className="truncate text-sm">{t(`symptom.${i.symptom}`)}</span>
+                  <span aria-hidden className="h-3 overflow-hidden rounded-full bg-line">
+                    <span className="block h-full rounded-full bg-primary" style={{ width: `${i.pct}%` }} />
+                  </span>
+                  <span className="text-right text-sm text-ink-2">{t('insights.pct', { value: i.pct })}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+
+      <section className="mx-4 rounded-2xl bg-surface p-4">
+        <h2 className="text-xl">{t('insights.moodPhase')}</h2>
+        <p className="mb-3 text-sm text-ink-2">{t('insights.moodPhaseHint')}</p>
+        {MOOD_PHASES.every(ph => moods[ph].length === 0) ? <p className="text-ink-2">{t('insights.noMoods')}</p> : (
+          <dl className="flex flex-col divide-y divide-line">
+            {MOOD_PHASES.map(ph => (
+              <div key={ph} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2">
+                <dt className="w-32 shrink-0 font-medium">{t(`phase.${ph}`)}</dt>
+                <dd className="flex flex-wrap gap-1.5">
+                  {moods[ph].length === 0 ? <span className="text-sm text-ink-2">–</span> : moods[ph].map(m => {
+                    const Icon = MOOD_ICONS[m.mood];
+                    return (
+                      <span key={m.mood} className="inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-1 text-sm">
+                        <Icon aria-hidden className="size-3.5" />{t(`mood.${m.mood}`)} × {m.count}
+                      </span>
+                    );
+                  })}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </section>
+
+      {(hab.sleep !== null || hab.water !== null || hab.pillTotal > 0) && (
+        <section className="mx-4 rounded-2xl bg-surface p-4">
+          <h2 className="text-xl">{t('insights.habits')}</h2>
+          <p className="mb-3 text-sm text-ink-2">{t('insights.habitsHint')}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {hab.sleep !== null && stat(t('insights.sleepAvg'), t('insights.hoursValue', { value: formatNumber(hab.sleep) }))}
+            {hab.water !== null && stat(t('insights.waterAvg'), t('insights.glassesValue', { value: formatNumber(hab.water) }))}
+            {hab.pillTotal > 0 && stat(t('insights.pillTaken'), t('insights.pillOf', { taken: hab.pillTaken, total: hab.pillTotal }))}
+            {hab.pillTotal > 0 && stat(t('insights.pillStreak'), t('insights.days', { count: hab.pillStreak, value: formatNumber(hab.pillStreak) }))}
+          </div>
+        </section>
+      )}
+
+      {weights.length >= 2 && (
+        <section className="mx-4 rounded-2xl bg-surface p-4">
+          <h2 className="mb-2 text-xl">{t('insights.weight')}</h2>
+          <div className="h-44" role="img" aria-label={t('insights.weightLabel', { first: formatNumber(weights[0].weight), last: formatNumber(weights[weights.length - 1].weight), count: weights.length })}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={weights.map(w => ({ ...w, label: formatDate(w.date) }))} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                <CartesianGrid vertical={false} stroke="var(--line)" />
+                <XAxis dataKey="label" tick={{ fill: 'var(--ink-2)', fontSize: 12 }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                <YAxis tick={{ fill: 'var(--ink-2)', fontSize: 12 }} tickLine={false} axisLine={false} domain={['dataMin - 2', 'dataMax + 2']} allowDecimals={false} />
+                <Line dataKey="weight" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      )}
+
+      {temps.points.length >= 2 && (
+        <section className="mx-4 rounded-2xl bg-surface p-4">
+          <h2 className="mb-2 text-xl">{t('ttc.chartTitle')}</h2>
+          <TempChart points={temps.points} lhDays={temps.lhDays} shift={detectShift(temps.points)} cycleLen={profile.settings.cycleLen} />
+        </section>
+      )}
+
       <div className="mx-4">
         <Button variant="secondary" onClick={() => void report.make()} disabled={report.busy}>
           <FileText aria-hidden className="size-4" />{t('insights.report')}
@@ -140,7 +234,21 @@ function Insights({ profile }: { profile: Profile }) {
   );
 }
 
-function Chart({ title, data, empty, avg, tone = 'primary' }: { title: string; data: CycleBar[]; empty: string; avg: number | null; tone?: 'primary' | 'period' }) {
+function RegularityCard({ reg }: { reg: Regularity }) {
+  const { t } = useTranslation();
+  const text = reg.kind === 'not_enough' ? t('regularity.not_enough')
+    : reg.kind === 'same' ? t('regularity.same', { count: reg.count, days: reg.days })
+    : t(`regularity.${reg.kind}`, { spread: reg.spread, shortest: reg.shortest, longest: reg.longest });
+  return (
+    <section className="mx-4 rounded-2xl bg-surface p-4">
+      <h2 className="text-xl">{t('regularity.title')}</h2>
+      <p className="mt-1">{text}</p>
+      <p className="mt-1 text-sm text-ink-2">{t('regularity.hint')}</p>
+    </section>
+  );
+}
+
+function Chart({ title, data, empty, avg, tone = 'primary', band = false }: { title: string; data: CycleBar[]; empty: string; avg: number | null; tone?: 'primary' | 'period'; band?: boolean }) {
   const { t } = useTranslation();
   return (
     <section className="mx-4 rounded-2xl bg-surface p-4">
@@ -151,6 +259,7 @@ function Chart({ title, data, empty, avg, tone = 'primary' }: { title: string; d
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.map(d => ({ ...d, label: formatDate(d.start, { month: 'short' }) }))} margin={{ top: 8, right: 4, left: -24, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="var(--line)" />
+                {band && <ReferenceArea y1={21} y2={35} fill="var(--fertile-tint)" fillOpacity={0.6} ifOverflow="extendDomain" />}
                 <XAxis dataKey="label" tick={{ fill: 'var(--ink-2)', fontSize: 12 }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
                 <YAxis tick={{ fill: 'var(--ink-2)', fontSize: 12 }} tickLine={false} axisLine={false} allowDecimals={false} domain={[0, 'dataMax + 4']} />
                 <Bar dataKey="length" fill={tone === 'period' ? 'var(--period)' : 'var(--primary)'} radius={[6, 6, 0, 0]} isAnimationActive={false} />
@@ -158,7 +267,8 @@ function Chart({ title, data, empty, avg, tone = 'primary' }: { title: string; d
               </BarChart>
             </ResponsiveContainer>
           </div>
-          {avg !== null && <p className="mt-1 text-sm text-ink-2">{t('insights.avgLine', { value: formatNumber(avg) })}</p>}
+          {avg !== null && <p className="mt-1 text-sm text-ink-2">{t('insights.avgLine', { count: avg, value: formatNumber(avg) })}</p>}
+          {band && <p className="text-sm text-ink-2">{t('insights.band')}</p>}
         </>
       )}
     </section>

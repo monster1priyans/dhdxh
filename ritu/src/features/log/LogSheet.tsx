@@ -4,13 +4,14 @@ import { ChevronDown, Lock } from 'lucide-react';
 import { localToday, type Flow, type ISODate } from '../../../shared/engine';
 import { applyPeriodOp } from '../../data/actions';
 import { emptyLog, emptyPrivate, getLog, getPrivate, saveLog, savePrivate } from '../../data/logs';
-import { MOODS, SYMPTOMS, type LogRec, type PeriodRec, type PrivateRec, type Profile } from '../../data/types';
+import { DISCHARGES, MOODS, RANGES, SYMPTOMS, type LogRec, type PeriodRec, type PrivateRec, type Profile } from '../../data/types';
 import { periodCovering, periodOff, periodOn, stretchTo, type PeriodLike } from '../../lib/periodRules';
 import { formatLongDate } from '../../lib/format';
 import { toast } from '../../store/toast';
 import { BottomSheet } from '../../components/BottomSheet';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
+import { NumberField } from '../../components/NumberField';
 import { Switch } from '../../components/Switch';
 import { NearbyPeriodSheet } from './NearbyPeriodSheet';
 import { MOOD_ICONS, SYMPTOM_ICONS } from './icons';
@@ -27,6 +28,9 @@ export function LogSheet({ profile, periods, date, onClose }: Props) {
   const [periodOnDay, setPeriodOnDay] = useState(false);
   const [nearby, setNearby] = useState<PeriodLike | null>(null);
   const [saving, setSaving] = useState(false);
+  // names of number boxes whose text is out of range; saving waits until they are fixed
+  const [invalid, setInvalid] = useState<string[]>([]);
+  const validity = (name: string) => (ok: boolean) => setInvalid(v => (ok ? v.filter(x => x !== name) : v.includes(name) ? v : [...v, name]));
   const showPrivate = !profile.isManaged;
   const ttc = profile.mode === 'ttc';
 
@@ -39,6 +43,7 @@ export function LogSheet({ profile, periods, date, onClose }: Props) {
       setLog(l ?? emptyLog(profile.id, date));
       setPriv(p ?? emptyPrivate(profile.id, date));
       setPeriodOnDay(Boolean(periodCovering(periods, date, today)));
+      setInvalid([]);
     })();
     return () => { alive = false; };
     // periods are read once per opening
@@ -74,7 +79,7 @@ export function LogSheet({ profile, periods, date, onClose }: Props) {
     <>
       <BottomSheet
         open={date !== null && nearby === null} onClose={onClose} title={formatLongDate(date)}
-        footer={<Button className="w-full" disabled={!log || saving} onClick={() => void save()}>{t('common.save')}</Button>}
+        footer={<Button className="w-full" disabled={!log || saving || invalid.length > 0} onClick={() => void save()}>{t('common.save')}</Button>}
       >
         {log && (
           <div className="flex flex-col gap-6">
@@ -119,20 +124,27 @@ export function LogSheet({ profile, periods, date, onClose }: Props) {
               </div>
             </div>
 
+            <Section title={t('log.discharge')} hint={t('log.dischargeHint')}>
+              {DISCHARGES.map(d => (
+                <Chip key={d} label={t(`discharge.${d}`)} selected={log.discharge === d} onToggle={() => set({ discharge: log.discharge === d ? null : d })} />
+              ))}
+            </Section>
+
+            {profile.trackPill && (
+              <Section title={t('log.pill')}>
+                {(['taken', 'missed'] as const).map(v => (
+                  <Chip key={v} label={t(`log.pill_${v}`)} selected={log.pill === v} onToggle={() => set({ pill: log.pill === v ? null : v })} />
+                ))}
+              </Section>
+            )}
+
             {ttc && (
               <div className="flex flex-col gap-4 rounded-2xl border border-line p-3">
-                <label className="flex items-center justify-between gap-3">
-                  <span className="font-medium">{t('log.bbt')}</span>
-                  <input
-                    type="number" inputMode="decimal" min={35} max={38} step={0.01}
-                    value={log.bbt ?? ''} placeholder="36.50"
-                    onChange={e => {
-                      const v = e.target.value === '' ? null : Number(e.target.value);
-                      set({ bbt: v !== null && v >= 35 && v <= 38 ? v : v === null ? null : log.bbt });
-                    }}
-                    className="min-h-11 w-28 rounded-xl border border-line bg-surface px-3 text-right"
-                  />
-                </label>
+                <NumberField
+                  label={t('log.bbt')} value={log.bbt} min={RANGES.bbt.min} max={RANGES.bbt.max} decimals={2}
+                  unit="°C" placeholder="36.50" hint={t('log.bbtHint')}
+                  onChange={bbt => set({ bbt })} onValidity={validity('bbt')}
+                />
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="mr-auto font-medium">{t('log.lh')}</span>
                   <Chip label={t('log.positive')} selected={log.lhTest === 'positive'} onToggle={() => set({ lhTest: log.lhTest === 'positive' ? null : 'positive' })} />
@@ -140,6 +152,16 @@ export function LogSheet({ profile, periods, date, onClose }: Props) {
                 </div>
               </div>
             )}
+
+            <fieldset className="flex flex-col gap-3 rounded-2xl border border-line p-3">
+              <legend className="px-1 font-medium">{t('log.body')}</legend>
+              <NumberField label={t('log.sleep')} value={log.sleep} min={RANGES.sleep.min} max={RANGES.sleep.max} decimals={1}
+                unit={t('log.hours')} placeholder="7.5" onChange={sleep => set({ sleep })} onValidity={validity('sleep')} />
+              <NumberField label={t('log.water')} value={log.water} min={RANGES.water.min} max={RANGES.water.max} decimals={0}
+                unit={t('log.glasses')} placeholder="8" onChange={water => set({ water })} onValidity={validity('water')} />
+              <NumberField label={t('log.weight')} value={log.weight} min={RANGES.weight.min} max={RANGES.weight.max} decimals={1}
+                unit={t('log.kg')} placeholder="55" onChange={weight => set({ weight })} onValidity={validity('weight')} />
+            </fieldset>
 
             <label className="flex flex-col gap-1.5">
               <span className="font-medium">{t('log.notes')}</span>

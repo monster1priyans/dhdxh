@@ -1,7 +1,7 @@
-import { useId, useState, type ReactNode } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useId, useState, type ReactNode } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, DatabaseBackup, Upload } from 'lucide-react';
+import { ChevronRight, DatabaseBackup, Trash2, Upload } from 'lucide-react';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { Button } from '../../components/Button';
 import { LearnLink } from '../../components/LearnLink';
@@ -12,6 +12,10 @@ import { buildBackup, parseBackup, restoreBackup, type Backup } from '../../lib/
 import { deliverFiles, pickTextFile } from '../../lib/files';
 import { rescheduleAll } from '../../lib/notifications';
 import { recompute } from '../../data/actions';
+import { deleteProfile } from '../../data/profiles';
+import { backupState, forgetBackupState, markBackedUp } from '../../lib/backupReminder';
+import { formatDateTime } from '../../lib/format';
+import { BottomSheet } from '../../components/BottomSheet';
 import { localToday } from '../../../shared/engine';
 import { useProfiles } from '../../store/profiles';
 import { useLock } from '../../store/lock';
@@ -57,12 +61,17 @@ export function SettingsScreen() {
   const { pinned, unlocked } = useLock();
   const [pending, setPending] = useState<Backup | null>(null);
   const lang = currentLocale();
+  const [lastBackup, setLastBackup] = useState<number | null>(null);
+  useEffect(() => { void backupState().then(s => setLastBackup(s.last)).catch(() => undefined); }, []);
 
   async function saveBackup() {
     const open = profiles.filter(p => !(pinned[p.id] && !unlocked[p.id]));
     if (!open.length) { toast(t('backup.nothing')); return; }
     const b = await buildBackup(open.map(p => p.id), p => !p.isManaged);
     await deliverFiles([{ name: `ritu-backup-${localToday()}.json`, mime: 'application/json', text: JSON.stringify(b) }], t('backup.save'));
+    const now = Date.now();
+    await markBackedUp(now);
+    setLastBackup(now);
     if (open.length < profiles.length) toast(t('backup.skippedLocked', { count: profiles.length - open.length }));
   }
 
@@ -105,6 +114,7 @@ export function SettingsScreen() {
 
       <Section title={t('backup.title')}>
         <p className="text-sm text-ink-2">{t('backup.hint')}</p>
+        <p className="text-sm font-medium">{lastBackup ? t('backup.last', { when: formatDateTime(lastBackup) }) : t('backup.never')}</p>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={() => void saveBackup()}><DatabaseBackup aria-hidden className="size-4" />{t('backup.save')}</Button>
           <Button variant="secondary" onClick={() => void chooseRestore()}><Upload aria-hidden className="size-4" />{t('backup.restore')}</Button>
@@ -112,6 +122,8 @@ export function SettingsScreen() {
       </Section>
 
       <LearnLink className="mx-4 mb-4" />
+
+      <EraseAll />
 
       <Section title={t('settings.about')}>
         <p className="text-ink-2">{t('privacy')}</p>
@@ -126,5 +138,52 @@ export function SettingsScreen() {
         actions={[{ label: t('backup.restore'), onClick: () => void doRestore(), variant: 'primary' }, { label: t('common.cancel'), onClick: () => setPending(null) }]}
       />
     </>
+  );
+}
+
+/** Remove every profile, PIN and setting from this phone, as if Ritu were just installed. */
+function EraseAll() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const profiles = useProfiles(s => s.profiles);
+  const [open, setOpen] = useState(false);
+  const [sure, setSure] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const close = () => { setOpen(false); setSure(false); };
+
+  async function erase() {
+    setBusy(true);
+    try {
+      const { removePin } = useLock.getState();
+      for (const p of profiles) {
+        await deleteProfile(p.id);
+        await removePin(p.id);
+      }
+      await forgetBackupState();
+      await useProfiles.getState().reload();
+      void rescheduleAll();
+      close();
+      toast(t('erase.done'));
+      navigate('/onboarding', { replace: true });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Section title={t('erase.title')}>
+      <p className="text-sm text-ink-2">{t('erase.hint')}</p>
+      <Button variant="danger" className="self-start" disabled={!profiles.length} onClick={() => setOpen(true)}>
+        <Trash2 aria-hidden className="size-4" />{t('erase.button')}
+      </Button>
+      <BottomSheet open={open} onClose={close} title={t('erase.confirmTitle')}
+        footer={<Button variant="danger" className="w-full" disabled={!sure || busy} onClick={() => void erase()}>{t('erase.button')}</Button>}>
+        <p className="mb-3 text-ink-2">{t('erase.confirmBody', { count: profiles.length })}</p>
+        <label className="flex min-h-11 items-start gap-3">
+          <input type="checkbox" checked={sure} onChange={e => setSure(e.target.checked)} className="mt-1 size-5 accent-[var(--period)]" />
+          <span>{t('erase.check')}</span>
+        </label>
+      </BottomSheet>
+    </Section>
   );
 }

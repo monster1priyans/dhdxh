@@ -11,6 +11,7 @@ import { ProfileScreen } from './features/profile/ProfileScreen';
 import { ProfileSettingsScreen } from './features/profile/ProfileSettings';
 import { PrivacyScreen } from './features/privacy/PrivacyScreen';
 import { LearnScreen } from './features/learn/LearnScreen';
+import { HistoryScreen } from './features/history/HistoryScreen';
 
 // charts are heavy: load the Insights screen on first visit
 const InsightsScreen = lazy(() => import('./features/insights/InsightsScreen').then(m => ({ default: m.InsightsScreen })));
@@ -30,6 +31,7 @@ export const router = createRouter([
           { index: true, element: <HomeScreen /> },
           { path: 'p/:pid', element: <ProfileScreen /> },
           { path: 'p/:pid/settings', element: <ProfileSettingsScreen /> },
+          { path: 'p/:pid/history', element: <HistoryScreen /> },
           { path: 'calendar', element: <CalendarScreen /> },
           { path: 'insights', element: <Suspense fallback={null}><InsightsScreen /></Suspense> },
           { path: 'profiles', element: <ProfilesScreen /> },

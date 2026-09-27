@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Download, FileText, KeyRound, Trash2 } from 'lucide-react';
+import { ArrowLeft, Download, FileText, History, KeyRound, Trash2 } from 'lucide-react';
 import { changeProfile } from '../../data/actions';
 import { deleteProfile } from '../../data/profiles';
 import { listReminders, saveReminder } from '../../data/reminders';
@@ -98,6 +98,10 @@ function Settings({ profile }: { profile: Profile }) {
         <Stepper label={t('profile.lutealLen')} value={s.lutealLen} min={10} max={16} unit={t('common.days')} onChange={v => set({ settings: { ...s, lutealLen: v } })} />
         <p className="text-sm text-ink-2">{t('profile.cycleHint')}</p>
         <Switch label={t('profile.showFertility')} checked={profile.showFertility} onChange={v => set({ showFertility: v })} hint={t('disclaimer')} />
+        <Switch label={t('profile.trackPill')} checked={profile.trackPill} onChange={v => set({ trackPill: v })} hint={t('profile.trackPillHint')} />
+        <Link to={`/p/${profile.id}/history`} className="flex min-h-11 items-center gap-2 font-medium text-primary">
+          <History aria-hidden className="size-4" />{t('history.link')}
+        </Link>
       </Card>
 
       <Reminders profile={profile} />

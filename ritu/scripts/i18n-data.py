@@ -279,6 +279,17 @@ HI = {
    'contact': {'title': 'सवाल', 'body': 'जिस व्यक्ति या संस्था ने आपको यह ऐप दिया उनसे पूछें, या ऐप स्टोर पेज पर दिए डेवलपर से।'}},
 }
 
+def merge(base, extra):
+    for k, v in extra.items():
+        if isinstance(v, dict) and isinstance(base.get(k), dict): merge(base[k], v)
+        else: base[k] = v
+
+# Strings for the newer screens live in their own file to keep this one readable
+import importlib.util, os
+_spec = importlib.util.spec_from_file_location('more', os.path.join(os.path.dirname(__file__), 'i18n_more.py'))
+_more = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_more)
+merge(EN, _more.EN); merge(HI, _more.HI)
+
 def flatten(d, prefix=''):
     out = {}
     for k, v in d.items():

@@ -57,10 +57,18 @@ export function CalendarScreen() {
 function MonthNav({ ym, setYm }: { ym: [number, number]; setYm: (v: [number, number]) => void }) {
   const { t } = useTranslation();
   const btn = 'grid size-11 place-items-center rounded-full bg-surface';
+  const today = localToday();
+  const now: [number, number] = [Number(today.slice(0, 4)), Number(today.slice(5, 7)) - 1];
+  const isNow = ym[0] === now[0] && ym[1] === now[1];
   return (
     <div className="flex items-center justify-between px-4 pb-2">
       <button type="button" className={btn} onClick={() => setYm(shiftMonth(ym[0], ym[1], -1))} aria-label={t('calendar.prev')}><ChevronLeft aria-hidden className="size-5" /></button>
-      <h2 className="text-xl" aria-live="polite">{formatMonth(ym[0], ym[1])}</h2>
+      <div className="flex flex-col items-center">
+        <h2 className="text-xl" aria-live="polite">{formatMonth(ym[0], ym[1])}</h2>
+        {!isNow && (
+          <button type="button" onClick={() => setYm(now)} className="min-h-9 rounded-full px-3 text-sm font-medium text-primary">{t('calendar.today')}</button>
+        )}
+      </div>
       <button type="button" className={btn} onClick={() => setYm(shiftMonth(ym[0], ym[1], 1))} aria-label={t('calendar.next')}><ChevronRight aria-hidden className="size-5" /></button>
     </div>
   );

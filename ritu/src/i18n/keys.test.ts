@@ -3,7 +3,9 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import en from './en.json';
 import hi from './hi.json';
-import { BANGLE_COLOURS, MOODS, SYMPTOMS } from '../data/types';
+import { BANGLE_COLOURS, DISCHARGES, MOODS, SYMPTOMS } from '../data/types';
+import { CHECKUPS } from '../lib/pregnancy';
+import { TIP_COUNTS } from '../lib/tips';
 import { REMINDER_TYPES } from '../data/reminders';
 
 const flat = (o: object, p = ''): string[] =>
@@ -26,6 +28,13 @@ const dynamic = [
   ...REMINDER_TYPES.map(r => `reminders.${r}`),
   ...['home', 'calendar', 'insights', 'profiles', 'settings'].map(k => `tabs.${k}`),
   ...['en', 'hi'].map(l => `lang.${l}`),
+  ...DISCHARGES.map(d => `discharge.${d}`), 'log.pill_taken', 'log.pill_missed',
+  ...CHECKUPS.map(c => `checkup.${c.id}`),
+  ...Object.entries(TIP_COUNTS).flatMap(([g, n]) => Array.from({ length: n }, (_, i) => `tips.${g}.${i + 1}`)),
+  ...['peak', 'high', 'low'].flatMap(l => [`ttc.level_${l}`, `ttc.levelHint_${l}`]),
+  ...['future', 'order', 'overlap'].map(e => `history.error_${e}`),
+  ...['period', 'fertile', 'due'].map(k => `upcoming.${k}`),
+  ...['not_enough', 'same', 'regular', 'irregular', 'young'].map(k => `regularity.${k}`),
   ...['none', 'protected', 'unprotected'].map(v => `log.intimacy_${v}`), 'log.positive', 'log.negative',
   ...['what', 'where', 'share', 'pin', 'notify', 'export', 'delete', 'children', 'medical', 'contact'].flatMap(s => [`policy.${s}.title`, `policy.${s}.body`]),
 ];

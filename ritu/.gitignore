@@ -7,3 +7,4 @@ dev-dist
 /android/app/release
 e2e/out
 dist-artifact
+__pycache__/

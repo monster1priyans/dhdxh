@@ -20,7 +20,9 @@ What you can do:
 • Discreet reminders that only say "Reminder – Tap to open"
 • A PIN per profile: a locked profile shows only a name and a lock
 • Profiles for a daughter, with fertile days hidden by default
-• Trying to conceive mode with temperature and ovulation tests; pregnancy mode
+• Trying to conceive mode with a fertility card, temperature chart and ovulation tests
+• Pregnancy mode with week, trimester and a check-up guide
+• Period history you can edit, with undo
 • Charts and a doctor report (PDF) to take to your appointment
 • Export as CSV/JSON, and a backup file to move to a new phone
 • Fully in English and हिंदी, light and dark theme
@@ -47,7 +49,9 @@ Predictions are estimates, not medical advice and not birth control.
 • छिपे हुए रिमाइंडर जो सिर्फ़ "रिमाइंडर – खोलने के लिए टैप करें" दिखाते हैं
 • हर प्रोफ़ाइल का PIN: लॉक प्रोफ़ाइल में सिर्फ़ नाम और ताला दिखता है
 • बेटी के लिए प्रोफ़ाइल, जिसमें फर्टाइल दिन पहले से छिपे रहते हैं
-• बच्चे की कोशिश वाला मोड (तापमान और ओव्यूलेशन टेस्ट) और प्रेगनेंसी मोड
+• बच्चे की कोशिश वाला मोड: फर्टिलिटी कार्ड, तापमान चार्ट और ओव्यूलेशन टेस्ट
+• प्रेगनेंसी मोड: हफ़्ता, तिमाही और जाँचों की गाइड
+• पीरियड की पूरी हिस्ट्री, बदलाव वापस लेने की सुविधा के साथ
 • चार्ट और डॉक्टर के लिए रिपोर्ट (PDF)
 • CSV/JSON में एक्सपोर्ट, और नए फ़ोन में ले जाने के लिए बैकअप फ़ाइल
 • पूरी तरह हिंदी और English में, लाइट और डार्क थीम

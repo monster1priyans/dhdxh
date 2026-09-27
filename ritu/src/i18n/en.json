@@ -53,7 +53,8 @@
     "upcoming_other": "Day {{day}}, period in {{count}} days",
     "due": "Period expected any day",
     "late_one": "Period is 1 day late",
-    "late_other": "Period is {{count}} days late"
+    "late_other": "Period is {{count}} days late",
+    "pregnant": "Pregnancy week {{week}}"
   },
   "phase": {
     "menstrual": "Period",
@@ -87,7 +88,9 @@
     "periodEnded": "Saved: period ended today",
     "periodFrom": "Saved: period started {{date}}",
     "nextLikely": "Next period likely {{date}}",
-    "alreadyPeriod": "That day is already part of a period"
+    "alreadyPeriod": "That day is already part of a period",
+    "undo": "Undo",
+    "undone": "Undone"
   },
   "today": {
     "day": "Day {{day}}",
@@ -145,7 +148,21 @@
     "nearbyTitle": "Edit the existing period instead?",
     "nearbyBody": "A period already started on {{date}}, less than 10 days away.",
     "editExisting": "Edit the existing period",
-    "addNew": "Add a new period"
+    "addNew": "Add a new period",
+    "discharge": "Discharge",
+    "dischargeHint": "Clear, stretchy discharge often comes in the fertile days.",
+    "pill": "Birth-control pill",
+    "pill_taken": "Taken",
+    "pill_missed": "Missed",
+    "body": "Body",
+    "sleep": "Sleep",
+    "water": "Water",
+    "weight": "Weight",
+    "hours": "hours",
+    "glasses": "glasses",
+    "kg": "kg",
+    "bbtHint": "Take it right after waking, before getting up, at about the same time each day.",
+    "rangeError": "Enter a number from {{min}} to {{max}}."
   },
   "flow": {
     "spotting": "Spotting",
@@ -166,7 +183,10 @@
     "cravings": "Cravings",
     "insomnia": "Poor sleep",
     "dizziness": "Dizziness",
-    "upset_stomach": "Upset stomach"
+    "upset_stomach": "Upset stomach",
+    "constipation": "Constipation",
+    "hot_flashes": "Hot flashes",
+    "joint_pain": "Joint pain"
   },
   "mood": {
     "happy": "Happy",
@@ -175,7 +195,8 @@
     "sensitive": "Sensitive",
     "sad": "Sad",
     "irritable": "Irritable",
-    "anxious": "Anxious"
+    "anxious": "Anxious",
+    "stressed": "Stressed"
   },
   "calendar": {
     "empty": "Add a profile to see her calendar.",
@@ -188,7 +209,8 @@
     "infoFertile": "Fertile day (estimate)",
     "infoOvulation": "Ovulation likely (estimate)",
     "infoNothing": "Nothing expected on this day.",
-    "lockedHidden": "Locked profiles are not shown."
+    "lockedHidden": "Locked profiles are not shown.",
+    "today": "Back to today"
   },
   "legend": {
     "title": "Legend",
@@ -227,7 +249,28 @@
     "why": "Why it can matter",
     "seeDoctor": "Consider seeing a doctor. This is not a diagnosis.",
     "report": "Doctor report",
-    "reportFailed": "Couldn't make the report. Please try again."
+    "reportFailed": "Couldn't make the report. Please try again.",
+    "avgLine_one": "Dashed line: average ({{value}} day)",
+    "avgLine_other": "Dashed line: average ({{value}} days)",
+    "band": "Shaded band: 21–35 days, the usual range for adults.",
+    "topSymptoms": "Most common symptoms",
+    "topSymptomsHint_one": "Share of the {{count}} day she logged",
+    "topSymptomsHint_other": "Share of the {{count}} days she logged",
+    "pct": "{{value}}%",
+    "moodPhase": "Mood by phase",
+    "moodPhaseHint": "Moods logged in each phase of the cycle (estimated).",
+    "noMoods": "No moods logged yet.",
+    "habits": "Body and habits",
+    "habitsHint": "Last 30 days, from the days logged.",
+    "sleepAvg": "Average sleep",
+    "hoursValue": "{{value}} h",
+    "waterAvg": "Average water",
+    "glassesValue": "{{value}} glasses",
+    "pillTaken": "Pill taken",
+    "pillOf": "{{taken}} of {{total}} days",
+    "pillStreak": "Pill streak",
+    "weight": "Weight",
+    "weightLabel": "Weight chart, {{count}} readings, from {{first}} kg to {{last}} kg"
   },
   "flag": {
     "cycle_length": {
@@ -368,7 +411,9 @@
     "periodLen": "Period length",
     "lutealLen": "Days from ovulation to period",
     "cycleHint": "Used until she has logged enough periods; after that Ritu uses her own history.",
-    "showFertility": "Show fertile days"
+    "showFertility": "Show fertile days",
+    "trackPill": "Track birth-control pill",
+    "trackPillHint": "Adds a \"Taken / Missed\" row to the daily log."
   },
   "mode": {
     "track": "Track periods",
@@ -433,7 +478,12 @@
     "confirmBody_one": "This adds 1 profile ({{names}}). If it is already on this phone, it is replaced.",
     "confirmBody_other": "This adds {{count}} profiles ({{names}}). Any already on this phone are replaced.",
     "restored_one": "Saved: 1 profile restored",
-    "restored_other": "Saved: {{count}} profiles restored"
+    "restored_other": "Saved: {{count}} profiles restored",
+    "last": "Last backup: {{when}}",
+    "never": "No backup saved yet",
+    "nudge": "It has been a month without a backup. Uninstalling Ritu or changing phones deletes everything, so save a backup file.",
+    "nudgeGo": "Save a backup",
+    "nudgeLater": "Later"
   },
   "settings": {
     "language": "Language",
@@ -456,7 +506,7 @@
     "updated": "Last updated September 2026",
     "what": {
       "title": "What Ritu stores",
-      "body": "The names, birth years, periods, symptoms, moods, notes and settings you enter. Nothing else. Ritu has no account and collects no device IDs, location or contacts."
+      "body": "The names, birth years, periods, symptoms, moods, notes, body records (like temperature, sleep, water, weight, pill and due date) and settings you enter. Nothing else. Ritu has no account and collects no device IDs, location or contacts."
     },
     "where": {
       "title": "Where it is stored",
@@ -494,5 +544,189 @@
       "title": "Questions",
       "body": "Ask the person or organisation that gave you this app, or the developer listed on the app store page."
     }
+  },
+  "discharge": {
+    "dry": "Dry or none",
+    "sticky": "Sticky",
+    "creamy": "Creamy",
+    "watery": "Watery",
+    "egg_white": "Egg-white (clear, stretchy)",
+    "unusual": "Unusual (colour, smell or itch)"
+  },
+  "history": {
+    "title": "{{name}}'s periods",
+    "link": "All periods",
+    "linkHint_one": "{{count}} period logged: see, edit or add",
+    "linkHint_other": "{{count}} periods logged: see, edit or add",
+    "intro": "Fix a wrong date or add a period you forgot. Predictions update as soon as you save.",
+    "add": "Add a past period",
+    "addTitle": "Add a period",
+    "editTitle": "Edit period",
+    "empty": "No periods logged yet",
+    "start": "First day",
+    "end": "Last day",
+    "stillGoing": "Still going",
+    "ongoing": "now",
+    "periodDays_one": "{{count}} day of bleeding",
+    "periodDays_other": "{{count}} days of bleeding",
+    "cycleDays_one": "cycle {{count}} day",
+    "cycleDays_other": "cycle {{count}} days",
+    "editOne": "Edit period {{range}}",
+    "deleteOne": "Delete period {{range}}",
+    "deleteTitle": "Delete this period?",
+    "deleteBody": "The period {{from}} – {{to}} will be removed and the predictions recalculated. Daily logs for those days stay.",
+    "delete": "Delete period",
+    "deleted": "Period deleted",
+    "error_future": "Dates cannot be in the future.",
+    "error_order": "The last day must be on or after the first day.",
+    "error_overlap": "These dates overlap another period. Edit that period instead, or change the dates."
+  },
+  "pregnancy": {
+    "title": "Pregnancy",
+    "noDue": "Add the due date to see the week of pregnancy and a guide to common check-ups.",
+    "addDue": "Add due date",
+    "changeDue": "Change",
+    "weeksDays": "{{weeks}} weeks {{days}} days",
+    "weekShort": "Week {{week}}",
+    "trimester": "Trimester {{n}}",
+    "progress": "Weeks of pregnancy, out of 40",
+    "due": "Due date: {{date}}",
+    "daysLeft_one": "{{count}} day to go",
+    "daysLeft_other": "{{count}} days to go",
+    "dueToday": "Due today",
+    "pastDue_one": "{{count}} day past the due date",
+    "pastDue_other": "{{count}} days past the due date",
+    "checkups": "Common check-ups",
+    "weeksRange": "Weeks {{from}}–{{to}}",
+    "now": "Now",
+    "checkupNote": "A general guide. Her doctor or ANM may plan visits differently; follow their advice.",
+    "ended": "Pregnancy ended",
+    "endTitle": "Go back to tracking periods?",
+    "endBody": "Ritu will stop the pregnancy view and start predicting periods again. Everything logged stays. If you need support, please talk to your doctor or someone you trust.",
+    "endConfirm": "Back to tracking periods",
+    "endedToast": "Back to tracking periods",
+    "dueTitle": "Due date",
+    "knowDue": "I know the due date",
+    "fromLmp": "From the last period",
+    "dueLabel": "Due date given by the doctor",
+    "lmpLabel": "First day of the last period",
+    "dueInvalid": "This date does not fit a current pregnancy. Check the date.",
+    "dueHint": "From the last period, the due date is 280 days (40 weeks) later. A scan date from the doctor is more exact."
+  },
+  "checkup": {
+    "register": "First visit: register the pregnancy, blood tests, start folic acid and iron as advised",
+    "nt_scan": "NT scan and first-trimester screening",
+    "anomaly_scan": "Anomaly (level 2) scan",
+    "glucose": "Sugar test for pregnancy diabetes (OGTT)",
+    "third_trimester": "Regular check-ups: blood pressure, baby’s growth and movements",
+    "full_term": "Full term: plan the delivery with the doctor, keep the hospital bag ready"
+  },
+  "ttc": {
+    "title": "Fertility today",
+    "level_peak": "Peak: ovulation is likely today",
+    "level_high": "High: in the fertile days",
+    "level_low": "Lower chance today",
+    "levelHint_peak": "The day of ovulation and the 1–2 days before it are the most fertile.",
+    "levelHint_high": "Sex every 1–2 days in the fertile days gives the best chance.",
+    "levelHint_low": "Pregnancy is less likely outside the fertile days, but not impossible.",
+    "nextWindow_one": "Fertile days start tomorrow ({{date}})",
+    "nextWindow_other": "Fertile days start in {{count}} days ({{date}})",
+    "fertilityOff": "Fertile days are hidden for this profile. Turn them on in profile settings.",
+    "noPeriods": "Log a period to see the fertile days.",
+    "lhPositive": "Positive LH test: ovulation often follows within 12–36 hours.",
+    "shift": "The temperature rose from {{date}}. This usually means ovulation has already happened.",
+    "chartTitle": "Morning temperature",
+    "chartEmpty": "Log the morning temperature for a few days to see a chart here.",
+    "chartLabel_one": "Temperature chart, {{count}} reading, {{min}} to {{max}} °C",
+    "chartLabel_other": "Temperature chart, {{count}} readings, {{min}} to {{max}} °C",
+    "axis": "Across: day of the cycle. Up: °C",
+    "legendLh": "Positive LH test",
+    "legendCover": "Line under the rise",
+    "note": "Temperature shows ovulation only after it happens. If there is no pregnancy after 12 months of trying (6 months if she is 35 or older), see a doctor."
+  },
+  "tips": {
+    "title": "Tip for today",
+    "menstrual": {
+      "1": "A hot-water bottle on the lower belly and light walking can ease cramps.",
+      "2": "Change pads every 4–6 hours, or sooner if the flow is heavy, to prevent rashes and infection.",
+      "3": "Iron-rich foods like green leafy vegetables, chana, rajma and jaggery help replace iron lost in bleeding.",
+      "4": "Pain that stops daily work, or soaking a pad every 1–2 hours, is worth showing to a doctor.",
+      "5": "Drink enough water and rest well; it is normal to feel more tired on the first days."
+    },
+    "follicular": {
+      "1": "Energy often rises after the period ends: a good time for exercise she enjoys.",
+      "2": "Protein at every meal (dal, paneer, eggs, curd) helps keep energy steady.",
+      "3": "Some light spotting between periods can happen, but bleeding between periods again and again needs a check-up.",
+      "4": "Regular sleep at the same time each night helps keep cycles steady.",
+      "5": "Logging symptoms now makes it easier to see which days of the cycle feel best."
+    },
+    "ovulation": {
+      "1": "A little pain on one side of the lower belly around ovulation is common and usually settles in a day.",
+      "2": "Clear, stretchy discharge like raw egg white is a sign of the fertile days.",
+      "3": "Fertile-day predictions are estimates and are not a safe way to avoid pregnancy.",
+      "4": "Body temperature rises slightly after ovulation and stays up until the next period."
+    },
+    "luteal": {
+      "1": "Bloating, sore breasts or mood changes before a period are common. Less salt and more water can help.",
+      "2": "Cravings are normal; roasted chana, fruit or nuts are better than a lot of sweets.",
+      "3": "Gentle exercise like walking or yoga can ease PMS.",
+      "4": "If mood changes before periods are very strong and affect daily life, talk to a doctor. Help is available.",
+      "5": "Keep pads ready: the next period is coming in the next days."
+    },
+    "late": {
+      "1": "Stress, illness, travel and weight change can delay a period by some days.",
+      "2": "If there is any chance of pregnancy, a home pregnancy test works from the day the period is due.",
+      "3": "If periods stop for 3 months or more without pregnancy, see a doctor."
+    },
+    "trimester1": {
+      "1": "Take folic acid and iron every day as the doctor advises.",
+      "2": "Nausea is common. Small, frequent meals and dry snacks in the morning can help.",
+      "3": "Bleeding, severe belly pain or fainting need a doctor at once.",
+      "4": "Register the pregnancy early at the hospital or with the ANM so check-ups and vaccines are not missed."
+    },
+    "trimester2": {
+      "1": "Most women feel the baby move between 18 and 22 weeks.",
+      "2": "Eat a little more: dal, milk, curd, green vegetables and fruit every day.",
+      "3": "Sleeping on the left side helps blood flow to the baby.",
+      "4": "Swelling of the face or hands, bad headache or blurred vision need a doctor at once."
+    },
+    "trimester3": {
+      "1": "Notice the baby’s movements every day. If they become fewer, go to the hospital the same day.",
+      "2": "Keep the hospital bag, reports and ID ready from 36 weeks.",
+      "3": "Water leaking, bleeding or regular painful tightening means go to the hospital.",
+      "4": "Plan with the family how to reach the hospital quickly, day or night."
+    }
+  },
+  "upcoming": {
+    "title": "Next 2 weeks",
+    "none": "Nothing expected in the next 2 weeks.",
+    "period": "{{name}}: period likely",
+    "fertile": "{{name}}: fertile days start",
+    "due": "{{name}}: due date",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "inDays_one": "In {{count}} day",
+    "inDays_other": "In {{count}} days",
+    "estimate": "Periods and fertile days are estimates."
+  },
+  "erase": {
+    "title": "Erase everything",
+    "hint": "Removes every profile, period, log, PIN and reminder from this phone.",
+    "button": "Erase everything",
+    "confirmTitle": "Erase everything on this phone?",
+    "confirmBody_one": "{{count}} profile and all its data will be deleted for good. Save a backup first if you may need it.",
+    "confirmBody_other": "All {{count}} profiles and their data will be deleted for good. Save a backup first if you may need it.",
+    "check": "I understand this cannot be undone",
+    "done": "Everything was erased"
+  },
+  "regularity": {
+    "title": "How regular",
+    "not_enough": "Log at least 5 periods to see how regular the cycles are.",
+    "same_one": "The last {{count}} cycle was {{days}} days.",
+    "same_other": "The last {{count}} cycles were all {{days}} days.",
+    "regular": "Regular: the last cycles were {{shortest}}–{{longest}} days (a difference of {{spread}} days).",
+    "irregular": "Irregular: the last cycles were {{shortest}}–{{longest}} days (a difference of {{spread}} days). Worth mentioning to a doctor.",
+    "young": "The last cycles were {{shortest}}–{{longest}} days. In the first years after periods start, cycles often vary this much.",
+    "hint": "Based on the last 6 cycles. A difference of up to 7–9 days is usually normal."
   }
 }

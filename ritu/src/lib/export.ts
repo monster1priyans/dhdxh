@@ -19,9 +19,10 @@ export function periodsCsv(periods: PeriodRec[]): string {
 
 export function logsCsv(logs: LogRec[]): string {
   return csv([
-    ['date', 'flow', 'symptoms', 'mood', 'pain', 'bbt_c', 'lh_test', 'notes'],
+    ['date', 'flow', 'symptoms', 'mood', 'pain', 'bbt_c', 'lh_test', 'discharge', 'pill', 'sleep_h', 'water_glasses', 'weight_kg', 'notes'],
     ...[...logs].sort((a, b) => a.date.localeCompare(b.date))
-      .map(l => [l.date, l.flow ?? '', l.symptoms.join(';'), l.mood ?? '', l.pain ?? '', l.bbt ?? '', l.lhTest ?? '', l.notes]),
+      .map(l => [l.date, l.flow ?? '', l.symptoms.join(';'), l.mood ?? '', l.pain ?? '', l.bbt ?? '', l.lhTest ?? '',
+        l.discharge ?? '', l.pill ?? '', l.sleep ?? '', l.water ?? '', l.weight ?? '', l.notes]),
   ]);
 }
 

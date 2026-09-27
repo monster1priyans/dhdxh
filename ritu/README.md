@@ -13,6 +13,12 @@ Multi-profile period tracker for India, English + हिंदी.
 - **Log sheet:** the period on/off rules from the spec, flow, symptoms, mood, pain, notes, TTC fields (temperature, LH test) and a private section.
 - **Calendar:** month grid with swipe, a legend, "This profile / Everyone" views, and an info sheet for future days.
 - **Insights:** stats, cycle and period-length charts, symptom heatmap, health flags with explanations, and a doctor report (PDF).
+- **Period history:** every period with its length and cycle strip; edit, add or delete with clear errors (future dates, reversed dates, overlaps). Changes to periods can be undone from the toast.
+- **More to log:** discharge, birth-control pill (optional per profile, with a quick "Taken / Missed" row), sleep, water and weight, with range checks. New symptoms (constipation, hot flashes, joint pain) and mood (stressed).
+- **Trying to conceive:** a "Fertility today" card (peak / high / lower), LH-test and temperature-rise notes (3-over-6 rule) and a morning-temperature chart.
+- **Pregnancy:** due date (typed in, or from the last period), week + days, trimester, progress and a general guide to common check-ups; "Pregnancy ended" goes back to tracking.
+- **Tips and coming up:** one general tip per day for her phase or trimester; Home shows the next 2 weeks (periods, fertile days, due dates) for every unlocked profile.
+- **More insights:** how regular the cycles are, the usual 21–35 day band, most common symptoms, mood by phase, sleep/water/pill habits, weight and temperature charts.
 - **Reminders (Android app):** local notifications that fire offline. They are discreet by default, and always discreet for PIN profiles.
 - **Export and backup:** CSV + JSON per profile. The whole-phone backup file can be restored on a new phone.
 - **Modes, language and theme:** Track / Trying to conceive / Pregnant (predictions paused). Hindi, dark mode, 360 px screens and large fonts are supported.
@@ -79,6 +85,6 @@ Play Store listing text (English + Hindi) and the Data safety answers are in [`d
 
 ## Notes
 
-- **Uninstalling deletes everything.** Uninstalling the app or clearing its data removes all profiles. Settings → Backup → "Save backup" is the way to keep a copy or move to a new phone.
+- **Uninstalling deletes everything.** Uninstalling the app or clearing its data removes all profiles. Settings → Backup → "Save backup" is the way to keep a copy or move to a new phone. Home shows a gentle reminder when there has been no backup for 30 days, and Settings → "Erase everything" wipes the phone clean.
 - **Web reminders:** the web version can't fire reminders when closed; reminders need the Android app.
 - **No tracking code:** there are no analytics, ads, crash reporting or third-party SDKs, and health data is never logged.

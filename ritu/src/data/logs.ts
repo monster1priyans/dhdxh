@@ -1,26 +1,30 @@
 import type { ISODate } from '../../shared/engine';
 import { emitChange, getDb } from './db';
 import type { LogRec, PrivateRec } from './types';
+import { normalizeLog } from './normalize';
 
 export const emptyLog = (pid: string, date: ISODate): LogRec => ({
-  pid, date, flow: null, symptoms: [], mood: null, pain: null, notes: '', bbt: null, lhTest: null, updatedAt: 0,
+  pid, date, flow: null, symptoms: [], mood: null, pain: null, notes: '', bbt: null, lhTest: null,
+  discharge: null, pill: null, sleep: null, water: null, weight: null, updatedAt: 0,
 });
 
 export async function listLogs(pid: string, from?: ISODate, to?: ISODate): Promise<LogRec[]> {
   const db = await getDb();
   const range = IDBKeyRange.bound([pid, from ?? '0000-00-00'], [pid, to ?? '9999-99-99']);
-  return db.getAll('logs', range);
+  return (await db.getAll('logs', range)).map(l => normalizeLog(l as unknown as Record<string, unknown>));
 }
 
 export async function getLog(pid: string, date: ISODate): Promise<LogRec | undefined> {
-  return (await getDb()).get('logs', [pid, date]);
+  const l = await (await getDb()).get('logs', [pid, date]);
+  return l ? normalizeLog(l as unknown as Record<string, unknown>) : undefined;
 }
 
 /** Saves the day's log; a log with nothing in it is removed. */
 export async function saveLog(log: LogRec): Promise<void> {
   const db = await getDb();
   const empty = log.flow === null && !log.symptoms.length && log.mood === null && log.pain === null
-    && !log.notes.trim() && log.bbt === null && log.lhTest === null;
+    && !log.notes.trim() && log.bbt === null && log.lhTest === null && log.discharge === null
+    && log.pill === null && log.sleep === null && log.water === null && log.weight === null;
   if (empty) await db.delete('logs', [log.pid, log.date]);
   else await db.put('logs', { ...log, updatedAt: Date.now() });
   emitChange('logs', log.pid);

@@ -46,3 +46,38 @@ export function periodOff(periods: PeriodLike[], d: ISODate, today: ISODate): Pe
 /** The period that is still going on today, if any. */
 export const ongoingPeriod = (periods: PeriodLike[], today: ISODate) =>
   periods.find(p => p.endDate === null && p.startDate <= today);
+
+export type PeriodEditError = 'future' | 'order' | 'overlap';
+
+/**
+ * Checks a period typed in the history screen. `end` null means "still going", which only makes sense
+ * for the latest period. The period being edited (same id) is ignored when looking for overlaps.
+ */
+export function validatePeriodEdit(
+  periods: PeriodLike[], edit: { id?: string; start: ISODate; end: ISODate | null }, today: ISODate,
+): PeriodEditError | null {
+  if (edit.start > today || (edit.end !== null && edit.end > today)) return 'future';
+  if (edit.end !== null && edit.end < edit.start) return 'order';
+  const end = edit.end ?? today;
+  const clash = periods.some(p => p.id !== edit.id && p.startDate <= end && effectiveEnd(p, today) >= edit.start);
+  if (clash) return 'overlap';
+  // an open period must be the latest one
+  if (edit.end === null && periods.some(p => p.id !== edit.id && p.startDate > edit.start)) return 'overlap';
+  return null;
+}
+
+/** One row of the history screen: a period and the cycle it started (null for the latest, still running). */
+export interface HistoryRow { period: PeriodLike; periodDays: number; cycleDays: number | null; ongoing: boolean }
+
+export function historyRows(periods: PeriodLike[], today: ISODate): HistoryRow[] {
+  const sorted = [...periods].sort((a, b) => a.startDate.localeCompare(b.startDate));
+  return sorted.map((p, i) => {
+    const next = sorted[i + 1];
+    return {
+      period: p,
+      periodDays: diffDays(effectiveEnd(p, today), p.startDate) + 1,
+      cycleDays: next ? diffDays(next.startDate, p.startDate) : null,
+      ongoing: p.endDate === null,
+    };
+  }).reverse();
+}
