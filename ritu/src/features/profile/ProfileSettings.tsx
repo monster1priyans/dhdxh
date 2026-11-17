@@ -24,6 +24,9 @@ import { Stepper } from '../../components/Stepper';
 import { Switch } from '../../components/Switch';
 import { ColourPicker } from '../onboarding/Onboarding';
 import { useDoctorReport } from '../insights/useDoctorReport';
+import { useProfileData } from '../../hooks/useProfileData';
+import { formatDate } from '../../lib/format';
+import { EndPregnancySheet } from '../stages/EndPregnancySheet';
 
 export function ProfileSettingsScreen() {
   const { pid } = useParams();
@@ -52,6 +55,15 @@ function Settings({ profile }: { profile: Profile }) {
   const birthValid = !birth || (/^\d{4}$/.test(birth) && birthYear! >= 1930 && birthYear! <= thisYear);
   const s = profile.settings;
   const set = (patch: Partial<Profile>) => void changeProfile(profile.id, patch);
+  const { periods, loaded } = useProfileData(profile.id);
+  // leaving pregnancy mode asks how the pregnancy ended; `editEnd` changes a saved ending
+  const [ending, setEnding] = useState<Exclude<Mode, 'pregnant'> | null>(null);
+  const [editEnd, setEditEnd] = useState(false);
+  const chooseMode = (m: Mode) => {
+    if (m === profile.mode) return;
+    if (profile.mode === 'pregnant') setEnding(m as Exclude<Mode, 'pregnant'>);
+    else set({ mode: m });
+  };
 
   return (
     <div className="pb-6">
@@ -83,7 +95,7 @@ function Settings({ profile }: { profile: Profile }) {
       <Card title={t('profile.mode')}>
         <div className="flex flex-col gap-2" role="radiogroup" aria-label={t('profile.mode')}>
           {(['track', 'ttc', 'pregnant'] as Mode[]).map(m => (
-            <button key={m} type="button" role="radio" aria-checked={profile.mode === m} onClick={() => set({ mode: m })}
+            <button key={m} type="button" role="radio" aria-checked={profile.mode === m} onClick={() => chooseMode(m)}
               className={`flex min-h-12 flex-col items-start justify-center rounded-xl border-2 px-3 py-2 text-left transition-colors duration-150 ${profile.mode === m ? 'border-primary' : 'border-line'}`}>
               <span className="font-medium">{t(`mode.${m}`)}</span>
               <span className="text-sm text-ink-2">{t(`mode.${m}Hint`)}</span>
@@ -99,10 +111,22 @@ function Settings({ profile }: { profile: Profile }) {
         <p className="text-sm text-ink-2">{t('profile.cycleHint')}</p>
         <Switch label={t('profile.showFertility')} checked={profile.showFertility} onChange={v => set({ showFertility: v })} hint={t('disclaimer')} />
         <Switch label={t('profile.trackPill')} checked={profile.trackPill} onChange={v => set({ trackPill: v })} hint={t('profile.trackPillHint')} />
+        {loaded && periods.length === 0 && (
+          <Switch label={t('profile.notStarted')} checked={profile.firstPeriodPending} onChange={v => set({ firstPeriodPending: v })} hint={t('profile.notStartedHint')} />
+        )}
+        {profile.pregnancyEnd && (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-ink-2">{t('profile.countedFrom', { date: formatDate(profile.pregnancyEnd.date, { day: 'numeric', month: 'long', year: 'numeric' }) })}</p>
+            <Button variant="secondary" onClick={() => setEditEnd(true)}>{t('after.change')}</Button>
+          </div>
+        )}
         <Link to={`/p/${profile.id}/history`} className="flex min-h-11 items-center gap-2 font-medium text-primary">
           <History aria-hidden className="size-4" />{t('history.link')}
         </Link>
       </Card>
+
+      {ending && <EndPregnancySheet profile={profile} nextMode={ending} onClose={() => setEnding(null)} />}
+      {editEnd && <EndPregnancySheet profile={profile} editing onClose={() => setEditEnd(false)} />}
 
       <Reminders profile={profile} />
       <PinSection profile={profile} />

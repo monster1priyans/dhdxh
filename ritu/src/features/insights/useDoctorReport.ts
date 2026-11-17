@@ -6,6 +6,7 @@ import { toEnginePeriods } from '../../data/periods';
 import type { Profile } from '../../data/types';
 import { useProfileData } from '../../hooks/useProfileData';
 import { buildReport, reportPdfBase64 } from '../../lib/report';
+import { cyclePeriods } from '../../lib/stage';
 import { deliverFiles, safeFileName } from '../../lib/files';
 import { toast } from '../../store/toast';
 
@@ -19,7 +20,7 @@ export function useDoctorReport(profile: Profile) {
       const today = localToday();
       const ps = toEnginePeriods(periods);
       const age = ageOf(profile);
-      const flags = healthFlags({ today, periods: ps, logs, pred: profile.prediction, age, mode: profile.mode });
+      const flags = healthFlags({ today, periods: cyclePeriods(profile, ps), logs, pred: profile.prediction, age, mode: profile.mode });
       const base64 = await reportPdfBase64(buildReport({ profile, periods: ps, logs, age, flags, today }));
       await deliverFiles([{ name: `ritu-report-${safeFileName(profile.name)}-${today}.pdf`, mime: 'application/pdf', base64 }], t('insights.report'));
     } catch {

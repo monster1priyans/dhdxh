@@ -4,11 +4,13 @@ import { addDays, dayInfo, diffDays, type ISODate, type Period } from '../../../
 import type { LogRec, Profile } from '../../data/types';
 import { formatDate } from '../../lib/format';
 import { cycleTemps, detectShift } from '../../lib/temp';
+import { cyclePeriods } from '../../lib/stage';
 import { TempChart } from '../../components/TempChart';
 
 /** Trying-to-conceive mode: today's chance, the LH and temperature signals, and the temperature chart. */
-export function FertilityCard({ profile, periods, logs, today }: { profile: Profile; periods: Period[]; logs: LogRec[]; today: ISODate }) {
+export function FertilityCard({ profile, periods: allPeriods, logs, today }: { profile: Profile; periods: Period[]; logs: LogRec[]; today: ISODate }) {
   const { t } = useTranslation();
+  const periods = cyclePeriods(profile, allPeriods);
   const pred = profile.prediction;
   const info = dayInfo(today, today, periods, pred, profile.settings.lutealLen);
   const level = !profile.showFertility || !periods.length ? null : info.ovulation ? 'peak' : info.fertile ? 'high' : 'low';

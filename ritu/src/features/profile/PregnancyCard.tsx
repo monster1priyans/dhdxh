@@ -9,7 +9,7 @@ import { CHECKUPS, checkupState, dueFromLastPeriod, gestation, isPlausibleDueDat
 import { toast } from '../../store/toast';
 import { BottomSheet } from '../../components/BottomSheet';
 import { Button } from '../../components/Button';
-import { ConfirmSheet } from '../../components/ConfirmSheet';
+import { EndPregnancySheet } from '../stages/EndPregnancySheet';
 
 /** Pregnancy mode: week and trimester from the due date, a general check-up guide, and a way back to tracking. */
 export function PregnancyCard({ profile, lastPeriod }: { profile: Profile; lastPeriod: ISODate | null }) {
@@ -18,13 +18,6 @@ export function PregnancyCard({ profile, lastPeriod }: { profile: Profile; lastP
   const [editDue, setEditDue] = useState(false);
   const [ending, setEnding] = useState(false);
   const g = profile.dueDate ? gestation(profile.dueDate, today) : null;
-
-  async function endPregnancy() {
-    setEnding(false);
-    const before = { mode: profile.mode, dueDate: profile.dueDate };
-    await changeProfile(profile.id, { mode: 'track', dueDate: null });
-    toast(t('pregnancy.endedToast'), { label: t('toast.undo'), run: async () => { await changeProfile(profile.id, before); toast(t('toast.undone')); } });
-  }
 
   return (
     <section className="mx-4 mt-6 flex flex-col gap-4 rounded-2xl bg-surface p-4" aria-labelledby="preg-title">
@@ -91,13 +84,7 @@ export function PregnancyCard({ profile, lastPeriod }: { profile: Profile; lastP
         open current={profile.dueDate} lastPeriod={lastPeriod} onClose={() => setEditDue(false)}
         onSave={async dueDate => { setEditDue(false); await changeProfile(profile.id, { dueDate }); toast(t('toast.saved')); }}
       />}
-      <ConfirmSheet
-        open={ending} onClose={() => setEnding(false)} title={t('pregnancy.endTitle')} body={t('pregnancy.endBody')}
-        actions={[
-          { label: t('pregnancy.endConfirm'), variant: 'primary', onClick: () => void endPregnancy() },
-          { label: t('common.cancel'), onClick: () => setEnding(false) },
-        ]}
-      />
+      {ending && <EndPregnancySheet profile={profile} onClose={() => setEnding(false)} />}
     </section>
   );
 }

@@ -35,7 +35,7 @@ describe('insights', () => {
 
 describe('doctor report', () => {
   it('summarises the last cycles and escapes her name', () => {
-    const profile: Profile = { id: 'p', name: 'प्रिया <b>', colour: 'rani', birthYear: 1996, mode: 'track', isManaged: false, showFertility: false, discreet: true, settings: DEFAULTS, prediction: computePrediction(periods), trackPill: false, dueDate: null, createdAt: 0, updatedAt: 0 };
+    const profile: Profile = { id: 'p', name: 'प्रिया <b>', colour: 'rani', birthYear: 1996, mode: 'track', isManaged: false, showFertility: false, discreet: true, settings: DEFAULTS, prediction: computePrediction(periods), trackPill: false, dueDate: null, firstPeriodPending: false, pregnancyEnd: null, createdAt: 0, updatedAt: 0 };
     const logs = [log('2026-01-02', { flow: 'very_heavy', pain: 9 }), log('2026-01-03', { flow: 'light', symptoms: ['cramps'] })];
     const flags = healthFlags({ today: '2026-03-01', periods, logs, pred: profile.prediction, age: 30, mode: 'track' });
     const m = buildReport({ profile, periods, logs, age: 30, flags, today: '2026-03-01' });

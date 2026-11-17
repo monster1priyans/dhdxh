@@ -3,7 +3,7 @@
 import { DEFAULTS, type Flow, type ISODate, type Mode } from '../../shared/engine';
 import {
   BANGLE_COLOURS, DISCHARGES, MOODS, RANGES, SYMPTOMS,
-  type BangleColour, type Discharge, type LogRec, type Mood, type Profile, type Symptom,
+  type BangleColour, type Discharge, type LogRec, type Mood, type PregnancyEnd, type Profile, type Symptom,
 } from './types';
 
 const FLOWS: Flow[] = ['spotting', 'light', 'medium', 'heavy', 'very_heavy'];
@@ -37,6 +37,13 @@ export function normalizeLog(raw: Loose, pid = String(raw.pid ?? '')): LogRec {
   };
 }
 
+function pregnancyEnd(v: unknown): PregnancyEnd | null {
+  if (!v || typeof v !== 'object') return null;
+  const o = v as Loose;
+  const outcome = pick(o.outcome, ['birth', 'loss'] as const);
+  return isIsoDate(o.date) && outcome ? { date: o.date, outcome } : null;
+}
+
 export function normalizeProfile(raw: Loose): Profile {
   const s = (raw.settings ?? {}) as Loose;
   const setting = (k: 'cycleLen' | 'periodLen' | 'lutealLen', min: number, max: number) =>
@@ -54,6 +61,8 @@ export function normalizeProfile(raw: Loose): Profile {
     prediction: (raw.prediction ?? null) as Profile['prediction'],
     trackPill: Boolean(raw.trackPill),
     dueDate: isIsoDate(raw.dueDate) ? raw.dueDate : null,
+    firstPeriodPending: Boolean(raw.firstPeriodPending),
+    pregnancyEnd: pregnancyEnd(raw.pregnancyEnd),
     createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : Date.now(),
     updatedAt: typeof raw.updatedAt === 'number' ? raw.updatedAt : Date.now(),
   };

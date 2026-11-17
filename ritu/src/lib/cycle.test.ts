@@ -7,7 +7,7 @@ const starts = ['2026-01-01', '2026-01-29', '2026-02-26', '2026-03-26', '2026-04
 const periods = starts.map((s, i) => ({ id: `${i}`, startDate: s, endDate: addDays(s, 4) }));
 const profile: Profile = {
   id: 'p', name: 'A', colour: 'rani', birthYear: null, mode: 'track', isManaged: false, showFertility: true,
-  discreet: true, settings: DEFAULTS, prediction: computePrediction(periods), trackPill: false, dueDate: null, createdAt: 0, updatedAt: 0,
+  discreet: true, settings: DEFAULTS, prediction: computePrediction(periods), trackPill: false, dueDate: null, firstPeriodPending: false, pregnancyEnd: null, createdAt: 0, updatedAt: 0,
 };
 
 describe('calendar painting', () => {

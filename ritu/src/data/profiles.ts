@@ -20,6 +20,7 @@ export async function createProfile(p: NewProfile): Promise<Profile> {
   const profile: Profile = {
     birthYear: null, mode: 'track', isManaged: false, showFertility: false, discreet: true,
     settings: { ...DEFAULTS }, prediction: null, trackPill: false, dueDate: null,
+    firstPeriodPending: false, pregnancyEnd: null,
     ...p,
     id: crypto.randomUUID(), createdAt: now, updatedAt: now,
   };

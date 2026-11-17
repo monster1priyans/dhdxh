@@ -8,7 +8,7 @@ const periods = starts.map((s, i) => ({ id: `${i}`, startDate: s, endDate: null 
 const profile = (over: Partial<Profile> = {}): Profile => ({
   id: 'p1', name: 'Maa', colour: 'rani', birthYear: 1990, mode: 'track', isManaged: false,
   showFertility: false, discreet: true, settings: DEFAULTS, prediction: computePrediction(periods),
-  trackPill: false, dueDate: null, createdAt: 0, updatedAt: 0, ...over,
+  trackPill: false, dueDate: null, firstPeriodPending: false, pregnancyEnd: null, createdAt: 0, updatedAt: 0, ...over,
 });
 const rem = (type: ReminderRec['type'], enabled = true, daysBefore = 2): ReminderRec =>
   ({ id: type, pid: 'p1', type, enabled, daysBefore, time: '09:00' });

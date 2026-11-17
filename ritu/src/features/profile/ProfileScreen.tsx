@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Baby, ChevronRight, CircleAlert, History, Lock, PauseCircle, Plus, Settings } from 'lucide-react';
+import { ArrowLeft, Baby, ChevronRight, CircleAlert, Heart, History, Lock, PauseCircle, Plus, Settings, Sparkles } from 'lucide-react';
 import { diffDays, healthFlags, localToday, type ISODate } from '../../../shared/engine';
 import { ageOf, applyPeriodOp } from '../../data/actions';
 import { emptyLog, saveLog } from '../../data/logs';
@@ -28,6 +28,10 @@ import { usePeriodActions } from '../log/usePeriodActions';
 import { FertilityCard } from '../ttc/FertilityCard';
 import { gestation } from '../../lib/pregnancy';
 import { PregnancyCard } from './PregnancyCard';
+import { cyclePeriods, stageOf, waitingForPeriods, type Stage } from '../../lib/stage';
+import { AfterPregnancyCard } from '../stages/AfterPregnancyCard';
+import { FirstPeriodCard } from '../stages/FirstPeriodCard';
+import { LochiaSheet } from '../log/LochiaSheet';
 import { TipCard } from './TipCard';
 
 export function ProfileScreen() {
@@ -56,10 +60,12 @@ function Today({ pid }: { pid: string }) {
 
   const ps = useMemo(() => toEnginePeriods(periods), [periods]);
   const st = statusOf(profile, ps, today);
+  // until her periods are read, show no stage card rather than one that may vanish a moment later
+  const stage: Stage = loaded ? stageOf(profile, ps, today) : { kind: profile.mode === 'pregnant' ? 'pregnant' : 'cycles' };
   const model = ringModel(today, profile, ps);
   const todayLog: LogRec = logs.find(l => l.date === today) ?? emptyLog(pid, today);
   const pred = profile.mode === 'pregnant' ? null : profile.prediction;
-  const flags = healthFlags({ today, periods: ps, logs, pred: profile.prediction, age: ageOf(profile), mode: profile.mode });
+  const flags = healthFlags({ today, periods: cyclePeriods(profile, ps), logs, pred: profile.prediction, age: ageOf(profile), mode: profile.mode });
   const doctorFlags = flags.filter(f => f.level === 'doctor');
   const longOngoing = actions.ongoing && diffDays(today, actions.ongoing.startDate) >= 9;
 
@@ -78,6 +84,9 @@ function Today({ pid }: { pid: string }) {
   const g = profile.mode === 'pregnant' && profile.dueDate ? gestation(profile.dueDate, today) : null;
   const lastStart = periods.length ? periods[periods.length - 1].startDate : null;
   const dayLabel = st.cycleDay !== null ? t('today.day', { day: st.cycleDay }) : null;
+  const line = statusLine(t, profile, st, periods.length > 0, today, stage);
+  const startLabel = stage.kind === 'before_first' ? t('actions.firstPeriodStarted')
+    : waitingForPeriods(stage) ? t('actions.periodBack') : t('actions.periodStarted');
 
   return (
     <div className="pb-6">
@@ -97,7 +106,7 @@ function Today({ pid }: { pid: string }) {
       </header>
 
       <section className="flex flex-col items-center gap-4 px-4 pt-4">
-        <BangleRing size={260} colour={profile.colour} model={model} animate={loaded} label={statusLine(t, profile, st, periods.length > 0)}>
+        <BangleRing size={260} colour={profile.colour} model={model} animate={loaded} label={line}>
           {profile.mode === 'pregnant' && g ? (
             <>
               <Baby aria-hidden className="size-9 text-ink-2" />
@@ -109,11 +118,27 @@ function Today({ pid }: { pid: string }) {
               <PauseCircle aria-hidden className="size-10 text-ink-2" />
               <span className="mt-1 max-w-40 text-lg font-medium">{t('status.paused')}</span>
             </>
+          ) : stage.kind === 'before_first' ? (
+            <>
+              <Sparkles aria-hidden className="size-9 text-ink-2" />
+              <span className="mt-1 max-w-40 text-lg font-medium">{line}</span>
+            </>
+          ) : stage.kind === 'after_birth' && !stage.periodsBack ? (
+            <>
+              <Baby aria-hidden className="size-9 text-ink-2" />
+              <span className="font-display text-[2.75rem] leading-none font-semibold">{t('pregnancy.weekShort', { week: Math.floor(stage.days / 7) + 1 })}</span>
+              <span className="mt-1 text-lg font-medium">{t('after.ringBirth')}</span>
+            </>
+          ) : stage.kind === 'after_loss' ? (
+            <>
+              <Heart aria-hidden className="size-9 text-ink-2" />
+              <span className="mt-1 max-w-40 text-lg font-medium">{line}</span>
+            </>
           ) : (
             <>
               {dayLabel && <span className="font-display text-[3.5rem] leading-none font-semibold">{dayLabel}</span>}
               {st.phase !== 'unknown' && <span className="mt-1 text-lg font-medium">{t(`phase.${st.phase}`)}</span>}
-              <span className="max-w-40 text-[0.9375rem] text-ink-2">{statusLine(t, profile, st, periods.length > 0)}</span>
+              <span className="max-w-40 text-[0.9375rem] text-ink-2">{line}</span>
             </>
           )}
         </BangleRing>
@@ -122,7 +147,7 @@ function Today({ pid }: { pid: string }) {
           <div className="flex flex-col items-center gap-1">
             {actions.ongoing
               ? <Button variant="secondary" onClick={() => void actions.end()}>{t('actions.periodEnded')}</Button>
-              : <Button onClick={() => void actions.start()}>{t('actions.periodStarted')}</Button>}
+              : <Button onClick={() => void actions.start()}>{startLabel}</Button>}
             <Button variant="ghost" onClick={() => setPickStart(true)}>{t('actions.startedOtherDay')}</Button>
           </div>
         )}
@@ -140,6 +165,8 @@ function Today({ pid }: { pid: string }) {
       )}
 
       {profile.mode === 'pregnant' && <PregnancyCard profile={profile} lastPeriod={lastStart} />}
+      {stage.kind === 'before_first' && <FirstPeriodCard profile={profile} />}
+      {(stage.kind === 'after_birth' || stage.kind === 'after_loss') && <AfterPregnancyCard profile={profile} stage={stage} />}
 
       <section className="mx-4 mt-6 flex flex-col gap-4 rounded-2xl bg-surface p-4">
         <h2 className="text-xl">{t('today.quickLog')}</h2>
@@ -169,7 +196,7 @@ function Today({ pid }: { pid: string }) {
 
       {profile.mode === 'ttc' && <FertilityCard profile={profile} periods={ps} logs={logs} today={today} />}
 
-      <TipCard profile={profile} st={st} today={today} />
+      {loaded && <TipCard profile={profile} st={st} today={today} stage={stage} />}
 
       {pred && (
         <section className="mx-4 mt-4 rounded-2xl bg-surface p-4">
@@ -196,7 +223,7 @@ function Today({ pid }: { pid: string }) {
         <History aria-hidden className="size-5 text-primary" />
         <span className="flex-1">
           <span className="block font-medium">{t('history.link')}</span>
-          <span className="block text-sm text-ink-2">{t('history.linkHint', { count: periods.length })}</span>
+          {loaded && <span className="block text-sm text-ink-2">{t('history.linkHint', { count: periods.length })}</span>}
         </span>
         <ChevronRight aria-hidden className="size-5 text-ink-2" />
       </Link>
@@ -206,6 +233,7 @@ function Today({ pid }: { pid: string }) {
       <LogSheet profile={profile} periods={periods} date={logDate} onClose={() => setLogDate(null)} />
       <StartDateSheet open={pickStart} name={profile.name} onClose={() => setPickStart(false)} onPick={d => actions.start(d)} />
       <NearbyPeriodSheet nearby={actions.ask?.nearby ?? null} onEdit={() => void actions.resolve(true)} onNew={() => void actions.resolve(false)} onClose={actions.cancelAsk} />
+      <LochiaSheet open={actions.lochia !== null} onPeriod={() => void actions.answerLochia(true)} onNotPeriod={() => void actions.answerLochia(false)} />
       {actions.ongoing && (
         <EndDateSheet
           open={endAsk} start={actions.ongoing.startDate} onClose={() => setEndAsk(false)}

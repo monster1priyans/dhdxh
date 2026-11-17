@@ -24,6 +24,9 @@ export const RANGES = {
   water: { min: 0, max: 30 },     // glasses
 } as const;
 
+export type PregnancyOutcome = 'birth' | 'loss';
+export interface PregnancyEnd { date: ISODate; outcome: PregnancyOutcome }
+
 /** Timestamps are epoch milliseconds; cycle dates are always "YYYY-MM-DD" strings. */
 export interface Profile {
   id: string;
@@ -41,6 +44,10 @@ export interface Profile {
   trackPill: boolean;
   /** pregnancy mode: expected due date */
   dueDate: ISODate | null;
+  /** set up before her first period (e.g. by a parent for a young daughter) */
+  firstPeriodPending: boolean;
+  /** when and how her last pregnancy ended; periods that started before it don't count towards predictions */
+  pregnancyEnd: PregnancyEnd | null;
   createdAt: number;
   updatedAt: number;
 }

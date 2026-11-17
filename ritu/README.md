@@ -16,7 +16,10 @@ Multi-profile period tracker for India, English + हिंदी.
 - **Period history:** every period with its length and cycle strip; edit, add or delete with clear errors (future dates, reversed dates, overlaps). Changes to periods can be undone from the toast.
 - **More to log:** discharge, birth-control pill (optional per profile, with a quick "Taken / Missed" row), sleep, water and weight, with range checks. New symptoms (constipation, hot flashes, joint pain) and mood (stressed).
 - **Trying to conceive:** a "Fertility today" card (peak / high / lower), LH-test and temperature-rise notes (3-over-6 rule) and a morning-temperature chart.
-- **Pregnancy:** due date (typed in, or from the last period), week + days, trimester, progress and a general guide to common check-ups; "Pregnancy ended" goes back to tracking.
+- **Pregnancy:** due date (typed in, or from the last period), week + days, trimester, progress and a general guide to common check-ups. "Pregnancy ended" asks how it ended: a birth, a loss, or "Pregnant" chosen by mistake.
+- **Life stages:**
+  - *Before the first period* (set in onboarding or profile settings): no predictions; signs the first period may come soon, a period kit for school, how to talk about periods, and when to see a doctor. "First period started" begins tracking.
+  - *After a birth or a pregnancy loss:* time since the birth, postnatal check-ups, warning signs that need a doctor at once, when periods come back, and support (Tele-MANAS 14416). Bleeding in the first 6 weeks after a birth is checked before it counts as a period. Predictions and doctor warnings restart from the first period after the pregnancy, so Ritu never calls her "250 days late"; the engine itself is unchanged and older periods stay in the history and charts.
 - **Tips and coming up:** one general tip per day for her phase or trimester; Home shows the next 2 weeks (periods, fertile days, due dates) for every unlocked profile.
 - **More insights:** how regular the cycles are, the usual 21–35 day band, most common symptoms, mood by phase, sleep/water/pill habits, weight and temperature charts.
 - **Reminders (Android app):** local notifications that fire offline. They are discreet by default, and always discreet for PIN profiles.
@@ -39,6 +42,10 @@ npm run i18n           # regenerate src/i18n/en.json + hi.json from scripts/i18n
 ```
 
 Edit strings in `scripts/i18n-data.py`, not in the JSON files. The script refuses to write if English and Hindi keys differ.
+
+## Checks on GitHub
+
+Every push that touches `ritu/` runs `.github/workflows/ritu.yml`: typecheck, unit tests in both time zones, the production build, the end-to-end browser test, and a debug APK build. Open the run under **Actions → Ritu** to download `ritu-debug-apk` (install it on an Android phone to try a change) and `ritu-screenshots`.
 
 ## Android app
 

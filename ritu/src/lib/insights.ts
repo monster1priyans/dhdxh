@@ -3,9 +3,13 @@ import { MOODS, SYMPTOMS, type LogRec, type Mood, type Symptom } from '../data/t
 
 export interface CycleBar { start: ISODate; length: number }
 
-export function cycleBars(periods: Period[], pred: Prediction | null, n = 12): CycleBar[] {
+/** Cycle lengths for the chart. `pregnancyEnd` drops the cycle that ran through a pregnancy. */
+export function cycleBars(periods: Period[], pred: Prediction | null, n = 12, pregnancyEnd: ISODate | null = null): CycleBar[] {
   const suspects = pred?.missedLogSuspects ?? [];
-  return cycleLengths(periods).filter(c => c.length >= 15 && c.length <= 90 && !suspects.includes(c.start)).slice(-n);
+  const spansPregnancy = (c: CycleBar) => pregnancyEnd !== null && c.start <= pregnancyEnd && addDays(c.start, c.length) > pregnancyEnd;
+  return cycleLengths(periods)
+    .filter(c => c.length >= 15 && c.length <= 90 && !suspects.includes(c.start) && !spansPregnancy(c))
+    .slice(-n);
 }
 
 export function periodBars(periods: Period[], n = 12): CycleBar[] {

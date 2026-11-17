@@ -28,12 +28,16 @@ export function Onboarding() {
   const first = profiles.length === 0 && params.get('add') !== '1';
   const [askNotify] = useState(() => isNative() && first);
 
+  // "periods haven't started yet": no cycle lengths or fertile days to ask about
+  const [notStarted, setNotStarted] = useState(false);
   const steps = useMemo<Step[]>(() => [
     ...(first ? (['lang', 'privacy'] as Step[]) : []),
-    'who', 'name', 'birth', 'last', 'lengths', 'fertility', 'pin',
+    'who', 'name', 'birth', 'last',
+    ...(notStarted ? [] : (['lengths', 'fertility'] as Step[])),
+    'pin',
     ...(askNotify ? (['notify'] as Step[]) : []),
     'done',
-  ], [first, askNotify]);
+  ], [first, askNotify, notStarted]);
 
   const usedColours = profiles.map(p => p.colour);
   const freshColour = () => BANGLE_COLOURS.find(c => !usedColours.includes(c)) ?? 'jamuni';
@@ -73,11 +77,12 @@ export function Onboarding() {
 
   async function create(pin: string | null) {
     setSaving(true);
-    const first = last && !dontRemember ? last : null;
+    const first = last && !dontRemember && !notStarted ? last : null;
     const pLen = periodUnsure ? 5 : periodLen;
     const end = first ? addDays(first, pLen - 1) : null;
     const profile = await setupProfile({
-      name: name.trim(), colour, birthYear, isManaged: who === 'managed', showFertility: fertilityOn,
+      name: name.trim(), colour, birthYear, isManaged: who === 'managed', showFertility: fertilityOn && !notStarted,
+      firstPeriodPending: notStarted,
       settings: { cycleLen: cycleUnsure ? 28 : cycleLen, periodLen: pLen, lutealLen: 14 },
     }, first ? { start: first, end: end! < today ? end : null } : null);
     if (pin) await useLock.getState().setPin(profile.id, pin);
@@ -90,7 +95,7 @@ export function Onboarding() {
 
   function restart() {
     setI(0);
-    setWho(null); setName(''); setColour(freshColour()); setBirth(''); setLast(null); setDontRemember(false);
+    setWho(null); setName(''); setColour(freshColour()); setBirth(''); setLast(null); setDontRemember(false); setNotStarted(false);
     setCycleLen(28); setCycleUnsure(false); setPeriodLen(5); setPeriodUnsure(false); setFertility(null);
     setPinFirst(null); setPinMode(false); setPinError(null);
     navigate('/onboarding?add=1', { replace: true });
@@ -177,15 +182,18 @@ export function Onboarding() {
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-ink-2">{t('onboarding.lastLabel')}</span>
             <input
-              type="date" max={today} value={last ?? ''} disabled={dontRemember}
+              type="date" max={today} value={last ?? ''} disabled={dontRemember || notStarted}
               onChange={e => setLast(e.target.value && e.target.value <= today ? e.target.value : null)}
               className="min-h-12 rounded-xl border border-line bg-surface px-3 text-lg disabled:opacity-50"
             />
           </label>
-          <Switch label={t('onboarding.dontRemember')} hint={t('onboarding.dontRememberHint')} checked={dontRemember} onChange={setDontRemember} />
+          <Switch label={t('onboarding.dontRemember')} hint={t('onboarding.dontRememberHint')} checked={dontRemember}
+            onChange={v => { setDontRemember(v); if (v) setNotStarted(false); }} />
+          <Switch label={t('profile.notStarted')} hint={t('onboarding.notStartedHint')} checked={notStarted}
+            onChange={v => { setNotStarted(v); if (v) setDontRemember(false); }} />
         </Screen>
       );
-      action = <Button className="w-full" disabled={!last && !dontRemember} onClick={next}>{t('common.next')}</Button>;
+      action = <Button className="w-full" disabled={!last && !dontRemember && !notStarted} onClick={next}>{t('common.next')}</Button>;
       break;
     case 'lengths':
       body = (

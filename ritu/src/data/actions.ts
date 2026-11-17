@@ -1,6 +1,7 @@
 // Every change that can move a prediction goes through here: write, recompute, reschedule reminders.
 import { computePrediction, type ISODate } from '../../shared/engine';
 import { rescheduleAll } from '../lib/notifications';
+import { cyclePeriods } from '../lib/stage';
 import type { PeriodOp } from '../lib/periodRules';
 import { addPeriod, deletePeriod, listPeriods, replacePeriods, toEnginePeriods, updatePeriod } from './periods';
 import { createProfile, getProfile, updateProfile, type NewProfile } from './profiles';
@@ -10,7 +11,7 @@ import type { Profile } from './types';
 export async function recompute(pid: string): Promise<void> {
   const profile = await getProfile(pid);
   if (!profile) return;
-  const prediction = computePrediction(toEnginePeriods(await listPeriods(pid)), profile.settings, profile.mode);
+  const prediction = computePrediction(toEnginePeriods(cyclePeriods(profile, await listPeriods(pid))), profile.settings, profile.mode);
   if (JSON.stringify(prediction) !== JSON.stringify(profile.prediction)) await updateProfile(pid, { prediction });
 }
 
@@ -43,7 +44,7 @@ export async function snapshotPeriods(pid: string): Promise<() => Promise<void>>
 
 export async function changeProfile(pid: string, patch: Partial<Omit<Profile, 'id' | 'createdAt'>>): Promise<void> {
   await updateProfile(pid, patch);
-  if (patch.settings || patch.mode) await recompute(pid);
+  if (patch.settings || patch.mode || 'pregnancyEnd' in patch) await recompute(pid);
   void rescheduleAll();
 }
 

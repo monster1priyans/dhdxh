@@ -286,9 +286,10 @@ def merge(base, extra):
 
 # Strings for the newer screens live in their own file to keep this one readable
 import importlib.util, os
-_spec = importlib.util.spec_from_file_location('more', os.path.join(os.path.dirname(__file__), 'i18n_more.py'))
-_more = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_more)
-merge(EN, _more.EN); merge(HI, _more.HI)
+for _name in ('i18n_more', 'i18n_stages'):
+    _spec = importlib.util.spec_from_file_location(_name, os.path.join(os.path.dirname(__file__), _name + '.py'))
+    _more = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_more)
+    merge(EN, _more.EN); merge(HI, _more.HI)
 
 def flatten(d, prefix=''):
     out = {}

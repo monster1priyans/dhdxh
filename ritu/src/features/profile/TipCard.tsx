@@ -3,11 +3,12 @@ import { Lightbulb } from 'lucide-react';
 import type { ISODate, TodayStatus } from '../../../shared/engine';
 import type { Profile } from '../../data/types';
 import { tipGroup, tipKey } from '../../lib/tips';
+import type { Stage } from '../../lib/stage';
 
 /** One short, general tip matched to where she is in her cycle (or pregnancy). */
-export function TipCard({ profile, st, today }: { profile: Profile; st: TodayStatus; today: ISODate }) {
+export function TipCard({ profile, st, today, stage }: { profile: Profile; st: TodayStatus; today: ISODate; stage?: Stage }) {
   const { t } = useTranslation();
-  const group = tipGroup(profile, st, today);
+  const group = tipGroup(profile, st, today, stage);
   if (!group) return null;
   return (
     <section className="mx-4 mt-4 flex gap-3 rounded-2xl bg-surface p-4" aria-labelledby="tip-title">

@@ -43,8 +43,17 @@ for (const d of '1234') await page.getByRole('button', { name: d, exact: true })
 await page.getByText('Enter the PIN again').waitFor();
 for (const d of '1234') await page.getByRole('button', { name: d, exact: true }).click();
 await page.getByText('प्रिया is ready').waitFor(); ok('profile 2 created with PIN');
+// a daughter whose periods haven't started yet: the cycle questions are skipped
+await page.getByRole('button', { name: 'Add another profile' }).click();
+await page.getByRole('button', { name: /Someone I care for/ }).click(); await next();
+await page.getByLabel('Name').fill('Meera'); await next();
+await page.getByLabel('Birth year').fill('2015'); await next();
+await page.getByRole('switch', { name: /Periods haven't started yet/ }).click(); await next();
+await page.getByRole('button', { name: 'No PIN' }).click();
+await page.getByText('Meera is ready').waitFor(); ok('profile 3 created before her first period (no cycle questions)');
 await page.getByRole('button', { name: 'Done' }).click();
 await page.getByText('On period, day 3').waitFor(); ok('home: Asha "On period, day 3"');
+await page.getByText('Waiting for the first period').waitFor(); ok('home: Meera "Waiting for the first period"');
 await page.getByRole('button', { name: 'Period ended' }).waitFor();
 await shot('04-home'); await noHScroll('home');
 
@@ -70,7 +79,7 @@ await page.getByRole('link', { name: 'Home' }).click();
 await page.getByRole('button', { name: /Asha/ }).first().click();
 await page.getByRole('heading', { name: 'Next periods' }).waitFor();
 const txt = await page.locator('main').innerText();
-if (!/Thu 16 July/.test(txt) || !txt.includes('± 1 day')) throw new Error('prediction not shown as expected:\n' + txt);
+if (!/Thu,? 16 July/.test(txt) || !txt.includes('± 1 day')) throw new Error('prediction not shown as expected:\n' + txt);
 ok('profile page: next period Thu 16 July, ± 1 day');
 await shot('06-profile'); await noHScroll('profile');
 await page.getByRole('button', { name: 'Cramps' }).click();
@@ -131,13 +140,25 @@ await page.getByText('Undone', { exact: true }).waitFor();
 await page.getByText('No periods logged yet').first().waitFor();
 ok('undo removes the period that was just added');
 
+// before the first period: the guide for parents, then "First period started" (undone again)
+await page.getByRole('link', { name: 'Home' }).click();
+await page.getByRole('button', { name: /Meera/ }).first().click();
+await page.getByRole('heading', { name: 'Before the first period', exact: true }).waitFor();
+await shot('12c-before-first'); await noHScroll('before first');
+await page.getByRole('button', { name: 'First period started' }).click();
+await page.getByText('Saved: first period on 20 Jun. Next period likely 18 Jul').waitFor();
+await page.getByRole('button', { name: 'Undo' }).click();
+await page.getByText('Undone', { exact: true }).waitFor();
+await page.getByRole('heading', { name: 'Before the first period', exact: true }).waitFor();
+ok('before the first period: guide shown; first period saved, then undone');
+
 
 // backup
 await page.getByRole('link', { name: 'Settings', exact: true }).click();
 const [bk] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Save backup' }).click()]);
 const b = JSON.parse(readFileSync(await bk.path(), 'utf8'));
-if (b.profiles.length !== 2 || b.profiles[0].periods.length !== 7) throw new Error('backup contents');
-ok('backup file has 2 profiles, 7 periods for Asha');
+if (b.profiles.length !== 3 || b.profiles[0].periods.length !== 7) throw new Error('backup contents');
+ok('backup file has 3 profiles, 7 periods for Asha');
 await shot('13-settings');
 
 // cycle guide
@@ -215,10 +236,51 @@ await page.getByText('16 weeks 4 days').waitFor();
 await page.getByText('Week 17').first().waitFor();
 await shot('13f-pregnancy'); await noHScroll('pregnancy'); ok('pregnancy: 16 weeks 4 days, week 17, check-ups');
 await page.getByRole('button', { name: 'Pregnancy ended' }).click();
-await page.getByRole('button', { name: 'Back to tracking periods' }).click();
+await page.getByRole('radio', { name: 'I chose Pregnant by mistake' }).click();
+await page.getByRole('button', { name: 'Save' }).click();
 await page.getByText('On period, day 3').first().waitFor();
-ok('pregnancy ended: back to tracking');
+ok('"Pregnant" chosen by mistake: back to tracking as before');
 await mode('Track periods');
+
+// after a birth: time since the birth, no "late" warning, and bleeding soon after is checked first
+await page.getByRole('link', { name: 'Home' }).click();
+await page.getByRole('link', { name: 'Add a profile' }).click();
+await page.getByRole('heading', { name: 'Who is this for?' }).waitFor();
+await page.getByRole('button', { name: 'Me', exact: true }).click(); await next();
+await page.getByLabel('Name').fill('Kavya'); await next();
+await page.getByLabel('Birth year').fill('1994'); await next();
+await page.getByLabel('First day of the last period').fill('2025-09-20'); await next();
+await next(); await next(); // cycle lengths, fertile days
+await page.getByRole('button', { name: 'No PIN' }).click();
+await page.getByText('Kavya is ready').waitFor();
+await page.getByRole('button', { name: 'Done' }).click();
+await page.getByRole('button', { name: /Kavya/ }).first().click();
+await mode('Pregnant');
+await page.getByRole('button', { name: 'Pregnancy ended' }).click();
+await page.getByRole('radio', { name: 'The baby was born' }).click();
+await page.getByLabel('Day of the birth').fill('2026-06-06');
+await page.getByRole('button', { name: 'Save' }).click();
+await page.getByRole('heading', { name: 'After the birth', exact: true }).waitFor();
+await page.getByText('since the birth on 6 June 2026').waitFor();
+await page.getByRole('img', { name: '2 weeks since the birth' }).waitFor();
+const afterBirth = await page.locator('main').innerText();
+if (/days? late/.test(afterBirth) || afterBirth.includes('worth checking with a doctor')) throw new Error('after a birth Ritu must not call the period late:\n' + afterBirth);
+await shot('13g-after-birth'); await noHScroll('after birth');
+await page.getByRole('button', { name: 'Period came back' }).click();
+await page.getByRole('heading', { name: 'Is this a period?' }).waitFor();
+await page.getByRole('button', { name: "No, it's bleeding after the birth" }).click();
+await page.getByRole('img', { name: '2 weeks since the birth' }).waitFor();
+ok('after a birth: "2 weeks since the birth", no late warning, lochia not counted as a period');
+await page.getByRole('button', { name: 'Change', exact: true }).click();
+await page.getByRole('radio', { name: /The pregnancy ended/ }).click();
+await page.getByRole('button', { name: 'Save' }).click();
+await page.getByRole('heading', { name: 'After the pregnancy', exact: true }).waitFor();
+await page.getByText('Waiting for periods to return').first().waitFor();
+await shot('13h-after-loss');
+await page.getByRole('button', { name: 'Period came back' }).click();
+await page.getByText('Saved: period started today. Next period likely 18 Jul').waitFor();
+await page.getByText('On period, day 1').first().waitFor();
+ok('after a pregnancy loss: waits for periods, then predictions restart from the new period');
 await page.getByRole('link', { name: 'Settings', exact: true }).click();
 
 // Hindi + dark

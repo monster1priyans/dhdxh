@@ -12,7 +12,7 @@ import { needsBackup } from './backupReminder';
 
 const P = (over: Partial<Profile> = {}): Profile => ({
   id: 'p', name: 'Asha', colour: 'rani', birthYear: 1995, mode: 'track', isManaged: false, showFertility: true,
-  discreet: true, settings: DEFAULTS, prediction: null, trackPill: false, dueDate: null, createdAt: 0, updatedAt: 0, ...over,
+  discreet: true, settings: DEFAULTS, prediction: null, trackPill: false, dueDate: null, firstPeriodPending: false, pregnancyEnd: null, createdAt: 0, updatedAt: 0, ...over,
 });
 const log = (date: string, over: Partial<LogRec> = {}): LogRec => ({ ...emptyLog('p', date), ...over });
 const starts = ['2026-01-01', '2026-01-29', '2026-02-26', '2026-03-26', '2026-04-23', '2026-05-21', '2026-06-18'];

@@ -12,6 +12,7 @@ import {
   type CycleBar, type Regularity,
 } from '../../lib/insights';
 import { cycleTemps, detectShift } from '../../lib/temp';
+import { cyclePeriods, stageOf, waitingForPeriods } from '../../lib/stage';
 import { TempChart } from '../../components/TempChart';
 import { MOOD_ICONS } from '../log/icons';
 import { formatDate, formatNumber } from '../../lib/format';
@@ -49,9 +50,11 @@ function Insights({ profile }: { profile: Profile }) {
   const { periods, logs, loaded } = useProfileData(profile.id);
   const today = localToday();
   const ps = useMemo(() => toEnginePeriods(periods), [periods]);
+  // predictions, warnings and temperatures follow the cycles since her last pregnancy; charts keep her history
+  const current = useMemo(() => cyclePeriods(profile, ps), [profile, ps]);
   const pred = profile.prediction;
-  const flags = healthFlags({ today, periods: ps, logs, pred, age: ageOf(profile), mode: profile.mode });
-  const cycles = cycleBars(ps, pred);
+  const flags = healthFlags({ today, periods: current, logs, pred, age: ageOf(profile), mode: profile.mode });
+  const cycles = cycleBars(ps, pred, 12, profile.pregnancyEnd?.date ?? null);
   const lens = periodBars(ps);
   const heat = useMemo(() => symptomHeatmap(ps, logs, today), [ps, logs, today]);
   const reg = regularity(cycles, ageOf(profile));
@@ -59,7 +62,7 @@ function Insights({ profile }: { profile: Profile }) {
   const moods = useMemo(() => moodsByPhase(logs, ps, pred, profile.settings.lutealLen, today), [logs, ps, pred, profile.settings.lutealLen, today]);
   const hab = useMemo(() => habits(logs, today), [logs, today]);
   const weights = useMemo(() => weightSeries(logs, today), [logs, today]);
-  const temps = useMemo(() => cycleTemps(ps, logs, today), [ps, logs, today]);
+  const temps = useMemo(() => cycleTemps(current, logs, today), [current, logs, today]);
   const [flag, setFlag] = useState<HealthFlag | null>(null);
   const report = useDoctorReport(profile);
 
@@ -74,8 +77,11 @@ function Insights({ profile }: { profile: Profile }) {
   );
   const days = (n: number | null | undefined) => (n == null ? '–' : t('insights.days', { count: n, value: formatNumber(n) }));
 
+  const waiting = waitingForPeriods(stageOf(profile, ps, today));
+
   return (
     <div className="flex flex-col gap-4 pb-6">
+      {waiting && <p className="mx-4 rounded-2xl bg-surface p-4 text-ink-2" role="note">{t('insights.afterPregnancy')}</p>}
       <section className="mx-4 grid grid-cols-2 gap-2" aria-label={t('insights.stats')}>
         {stat(t('insights.avgCycle'), days(pred?.avgCycle))}
         {stat(t('insights.avgPeriod'), days(pred?.avgPeriod))}

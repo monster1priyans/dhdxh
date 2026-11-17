@@ -10,6 +10,8 @@ import { ringModel, statusLine, statusOf } from '../../lib/cycle';
 import { formatDate, formatDateTime, formatLongDate } from '../../lib/format';
 import { backupState, needsBackup, snoozeBackup } from '../../lib/backupReminder';
 import { upcomingEvents } from '../../lib/upcoming';
+import { stageOf } from '../../lib/stage';
+import { LochiaSheet } from '../log/LochiaSheet';
 import { useProfiles } from '../../store/profiles';
 import { useLock } from '../../store/lock';
 import { BangleRing } from '../../components/BangleRing';
@@ -37,7 +39,7 @@ export function HomeScreen() {
       ) : (
         <>
           <ul className="mx-4 divide-y divide-line overflow-hidden rounded-2xl bg-surface">
-            {profiles.map(p => <Row key={p.id} profile={p} periods={periods[p.id] ?? []} />)}
+            {profiles.map(p => <Row key={p.id} profile={p} periods={periods[p.id] ?? []} loaded={p.id in periods} />)}
           </ul>
           <div className="px-4 pt-4">
             <Link to="/onboarding?add=1" className="inline-flex min-h-11 items-center gap-2 rounded-full px-2 font-medium text-primary">
@@ -53,7 +55,7 @@ export function HomeScreen() {
   );
 }
 
-function Row({ profile, periods }: { profile: Profile; periods: PeriodRec[] }) {
+function Row({ profile, periods, loaded }: { profile: Profile; periods: PeriodRec[]; loaded: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { pinned, unlocked, pinState } = useLock();
@@ -80,13 +82,14 @@ function Row({ profile, periods }: { profile: Profile; periods: PeriodRec[] }) {
   const ps = toEnginePeriods(periods);
   const st = statusOf(profile, ps, today);
   const model = ringModel(today, profile, ps);
+  const stage = loaded ? stageOf(profile, ps, today) : undefined;
   return (
     <li className="flex items-center gap-3 px-4 py-3">
       <button type="button" onClick={() => navigate(`/p/${profile.id}`)} className="flex min-h-12 min-w-0 flex-1 items-center gap-3 text-left">
         <BangleRing size={40} colour={profile.colour} model={model} label={t('home.ringLabel', { name: profile.name })} />
         <span className="flex min-w-0 flex-col">
           <span className="truncate text-lg font-medium">{profile.name}</span>
-          <span className="text-sm text-ink-2">{statusLine(t, profile, st, periods.length > 0)}</span>
+          <span className="text-sm text-ink-2">{statusLine(t, profile, st, periods.length > 0, today, stage)}</span>
         </span>
       </button>
       {profile.mode !== 'pregnant' && (
@@ -105,6 +108,7 @@ function Row({ profile, periods }: { profile: Profile; periods: PeriodRec[] }) {
         nearby={actions.ask?.nearby ?? null}
         onEdit={() => void actions.resolve(true)} onNew={() => void actions.resolve(false)} onClose={actions.cancelAsk}
       />
+      <LochiaSheet open={actions.lochia !== null} onPeriod={() => void actions.answerLochia(true)} onNotPeriod={() => void actions.answerLochia(false)} />
     </li>
   );
 }

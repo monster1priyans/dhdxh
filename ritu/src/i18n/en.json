@@ -54,7 +54,16 @@
     "due": "Period expected any day",
     "late_one": "Period is 1 day late",
     "late_other": "Period is {{count}} days late",
-    "pregnant": "Pregnancy week {{week}}"
+    "pregnant": "Pregnancy week {{week}}",
+    "waitingFirst": "Waiting for the first period",
+    "afterLoss": "Waiting for periods to return",
+    "birthToday": "Baby born today",
+    "birthDays_one": "{{count}} day since the birth",
+    "birthDays_other": "{{count}} days since the birth",
+    "birthWeeks_one": "{{count}} week since the birth",
+    "birthWeeks_other": "{{count}} weeks since the birth",
+    "birthMonths_one": "{{count}} month since the birth",
+    "birthMonths_other": "{{count}} months since the birth"
   },
   "phase": {
     "menstrual": "Period",
@@ -68,7 +77,9 @@
     "periodStarted": "Period started",
     "periodEnded": "Period ended",
     "startedOtherDay": "Started on another day",
-    "startedOtherDayFor": "{{name}}: period started on another day"
+    "startedOtherDayFor": "{{name}}: period started on another day",
+    "firstPeriodStarted": "First period started",
+    "periodBack": "Period came back"
   },
   "startDate": {
     "title": "When did {{name}}’s period start?",
@@ -90,7 +101,8 @@
     "nextLikely": "Next period likely {{date}}",
     "alreadyPeriod": "That day is already part of a period",
     "undo": "Undo",
-    "undone": "Undone"
+    "undone": "Undone",
+    "firstPeriod": "Saved: first period on {{date}}"
   },
   "today": {
     "day": "Day {{day}}",
@@ -270,7 +282,8 @@
     "pillOf": "{{taken}} of {{total}} days",
     "pillStreak": "Pill streak",
     "weight": "Weight",
-    "weightLabel": "Weight chart, {{count}} readings, from {{first}} kg to {{last}} kg"
+    "weightLabel": "Weight chart, {{count}} readings, from {{first}} kg to {{last}} kg",
+    "afterPregnancy": "Predictions start again once periods come back after the pregnancy. The charts still show earlier cycles."
   },
   "flag": {
     "cycle_length": {
@@ -355,7 +368,8 @@
     "created": "Saved: {{name}} added",
     "doneTitle": "{{name}} is ready",
     "doneSub": "Add another person who uses this phone, or start tracking.",
-    "addAnother": "Add another profile"
+    "addAnother": "Add another profile",
+    "notStartedHint": "For a girl who hasn't had her first period yet. You can log it when it comes."
   },
   "colours": {
     "rani": "Rani",
@@ -413,7 +427,10 @@
     "cycleHint": "Used until she has logged enough periods; after that Ritu uses her own history.",
     "showFertility": "Show fertile days",
     "trackPill": "Track birth-control pill",
-    "trackPillHint": "Adds a \"Taken / Missed\" row to the daily log."
+    "trackPillHint": "Adds a \"Taken / Missed\" row to the daily log.",
+    "notStarted": "Periods haven't started yet",
+    "notStartedHint": "Shows the signs to look for and a guide for parents, until the first period",
+    "countedFrom": "Cycles are counted from {{date}}, after the last pregnancy."
   },
   "mode": {
     "track": "Track periods",
@@ -601,10 +618,6 @@
     "now": "Now",
     "checkupNote": "A general guide. Her doctor or ANM may plan visits differently; follow their advice.",
     "ended": "Pregnancy ended",
-    "endTitle": "Go back to tracking periods?",
-    "endBody": "Ritu will stop the pregnancy view and start predicting periods again. Everything logged stays. If you need support, please talk to your doctor or someone you trust.",
-    "endConfirm": "Back to tracking periods",
-    "endedToast": "Back to tracking periods",
     "dueTitle": "Due date",
     "knowDue": "I know the due date",
     "fromLmp": "From the last period",
@@ -695,6 +708,20 @@
       "2": "Keep the hospital bag, reports and ID ready from 36 weeks.",
       "3": "Water leaking, bleeding or regular painful tightening means go to the hospital.",
       "4": "Plan with the family how to reach the hospital quickly, day or night."
+    },
+    "before_first": {
+      "1": "Keep a small period kit in her school bag, so she is ready wherever she is.",
+      "2": "White discharge in the months before the first period is normal.",
+      "3": "Show her how to use and change a pad before her first period comes.",
+      "4": "Periods are healthy: she can bathe, go to school, play and eat as usual.",
+      "5": "Good food with protein, iron and calcium helps her body as she grows."
+    },
+    "after_birth": {
+      "1": "Rest when the baby sleeps, and let family help with the housework.",
+      "2": "Eat well, and keep taking iron and calcium as the doctor advises.",
+      "3": "Drink plenty of water, especially when breastfeeding.",
+      "4": "Gentle pelvic floor exercises, squeezing as if stopping urine, help the body recover.",
+      "5": "Feeling weepy in the first 2 weeks is common. If low mood lasts longer, talk to a doctor."
     }
   },
   "upcoming": {
@@ -707,7 +734,8 @@
     "tomorrow": "Tomorrow",
     "inDays_one": "In {{count}} day",
     "inDays_other": "In {{count}} days",
-    "estimate": "Periods and fertile days are estimates."
+    "estimate": "Periods and fertile days are estimates.",
+    "checkup": "{{name}}: check-up 6 weeks after the birth"
   },
   "erase": {
     "title": "Erase everything",
@@ -728,5 +756,89 @@
     "irregular": "Irregular: the last cycles were {{shortest}}–{{longest}} days (a difference of {{spread}} days). Worth mentioning to a doctor.",
     "young": "The last cycles were {{shortest}}–{{longest}} days. In the first years after periods start, cycles often vary this much.",
     "hint": "Based on the last 6 cycles. A difference of up to 7–9 days is usually normal."
+  },
+  "endPregnancy": {
+    "title": "How did the pregnancy end?",
+    "editTitle": "Change how the pregnancy ended",
+    "birth": "The baby was born",
+    "loss": "The pregnancy ended",
+    "lossHint": "A miscarriage, abortion or other loss",
+    "mistake": "I chose Pregnant by mistake",
+    "remove": "Remove it: it was a mistake",
+    "removeHint": "Ritu counts all periods again",
+    "birthDate": "Day of the birth",
+    "lossDate": "Day it ended",
+    "note": "Ritu starts counting cycles again from this day. Periods before it stay in the history.",
+    "mistakeNote": "Ritu goes back to tracking periods as before.",
+    "removeNote": "Ritu counts cycles from all periods again."
+  },
+  "lochia": {
+    "title": "Is this a period?",
+    "body": "In the first 6 weeks after a birth, bleeding is usually lochia: normal bleeding while the womb heals. It isn't a period, so Ritu doesn't count it. You can note it under Flow in Today.",
+    "yes": "Yes, it's a period",
+    "no": "No, it's bleeding after the birth"
+  },
+  "after": {
+    "birthTitle": "After the birth",
+    "lossTitle": "After the pregnancy",
+    "ringBirth": "after the birth",
+    "sinceBirth": "since the birth on {{date}}",
+    "lossOn": "The pregnancy ended on {{date}}",
+    "lossCare": "Take the time you need to rest and recover.",
+    "waitingBirth": "Periods haven't come back yet. Ritu will start predicting again after the first one.",
+    "waitingLoss": "Bleeding and cramps usually settle within 2 weeks. The next period often comes 4–6 weeks later; Ritu will start predicting again after it.",
+    "periodsBack": "Periods are back. Cycles can be irregular for a while after a birth.",
+    "checkups": "Check-ups after the birth",
+    "checkup_first_week": "In the first week: a check-up for mother and baby",
+    "checkup_six_weeks": "At about 6 weeks: a check-up, and a talk about family planning",
+    "checkupNote": "A general guide. The doctor, ANM or ASHA may plan visits differently; follow their advice.",
+    "urgentTitle": "Go to a doctor at once for:",
+    "urgent_bleeding": "Soaking a pad in an hour or less, or large clots",
+    "urgent_fever": "Fever or chills",
+    "urgent_smell": "Bad-smelling discharge",
+    "urgent_headache": "A bad headache, blurred vision or fits",
+    "urgent_leg": "Pain or swelling in one leg",
+    "urgent_breath": "Chest pain or trouble breathing",
+    "urgent_harm": "Thoughts of self-harm or of harming the baby",
+    "urgent_pain": "Severe pain in the belly",
+    "urgent_long": "Bleeding that lasts more than 2 weeks",
+    "lochiaTitle": "Bleeding after the birth",
+    "lochiaBody": "Bleeding after a birth (lochia) is normal. It is heaviest in the first days, then gets lighter and paler, and usually stops by 6 weeks. It is not a period, so Ritu doesn't count it.",
+    "periodsTitle": "When periods come back",
+    "periodsBody": "Without breastfeeding, periods often come back 6–8 weeks after the birth. Breastfeeding can delay them for many months.",
+    "familyPlanning": "Pregnancy is possible before the first period comes back. Talk to the doctor about family planning.",
+    "feelingsTitle": "Feelings and support",
+    "feelingsBirth": "Feeling weepy or worried in the first 2 weeks is common. If low mood or worry lasts longer, talk to a doctor: it is common and it can be treated.",
+    "feelingsLoss": "Feelings after a pregnancy ends can be strong and mixed. Talk to someone you trust, or to a doctor.",
+    "helpline": "Tele-MANAS mental health helpline (free, 24×7): 14416",
+    "nextTitle": "The next pregnancy",
+    "nextBody": "Pregnancy is possible again before the next period. Ask the doctor when it is right to try again, or about family planning.",
+    "change": "Change"
+  },
+  "first": {
+    "title": "Before the first period",
+    "intro": "Most girls get their first period between ages 10 and 15, usually about 2 years after the breasts start to grow.",
+    "age15": "She is about {{age}}. If periods haven't started by 15, it's a good idea to see a doctor.",
+    "signsTitle": "Signs it may come soon",
+    "sign_breasts": "The breasts start to grow",
+    "sign_growth": "A growth spurt: she grows taller quickly",
+    "sign_hair": "Hair under the arms and around the private parts",
+    "sign_discharge": "White or clear discharge in her underwear, often 6–12 months before",
+    "kitTitle": "A period kit for her school bag",
+    "kit_pads": "2–3 pads",
+    "kit_underwear": "A spare pair of underwear",
+    "kit_bag": "A small paper or zip bag for used pads",
+    "kit_tissues": "Tissues or wipes",
+    "talkTitle": "How to talk about it",
+    "talk_early": "Start early, around age 8 or 9, before the first period comes, in simple and correct words.",
+    "talk_normal": "Tell her periods are normal and healthy, not dirty. She can bathe, go to school, play and eat as usual.",
+    "talk_pad": "Show her how to use a pad, to change it every 4–6 hours, and how to throw it away.",
+    "talk_ask": "Tell her she can always come to you, and who she can ask at school.",
+    "talk_irregular": "Explain that the first periods are often irregular, and that's normal for the first 2 years.",
+    "doctorTitle": "When to see a doctor",
+    "doctor_age15": "No period by age 15",
+    "doctor_three_years": "No period 3 years after the breasts started to grow",
+    "doctor_no_breasts": "No breast growth by age 13",
+    "doctor_before8": "Signs of puberty before age 8"
   }
 }

@@ -6,12 +6,15 @@ import { getProfile } from '../../data/profiles';
 import { formatDate } from '../../lib/format';
 import type { PeriodRec } from '../../data/types';
 import { ongoingPeriod, periodOn, stretchTo, type PeriodLike, type PeriodOp } from '../../lib/periodRules';
+import { likelyLochia } from '../../lib/stage';
 import { toast, type ToastAction } from '../../store/toast';
 
 /** "Period started" / "Period ended" with the "Edit the existing period instead?" question. */
 export function usePeriodActions(pid: string, periods: PeriodRec[]) {
   const { t } = useTranslation();
   const [ask, setAsk] = useState<{ date: ISODate; nearby: PeriodLike } | null>(null);
+  // a day soon after a birth that may be lochia rather than a period, waiting for her answer
+  const [lochia, setLochia] = useState<ISODate | null>(null);
   const today = localToday();
   const ongoing = ongoingPeriod(periods, today);
 
@@ -24,15 +27,21 @@ export function usePeriodActions(pid: string, periods: PeriodRec[]) {
 
   /** "Saved: period started 12 Sep. Next period likely 10 Oct." — read after the prediction is recalculated. */
   async function savedWithPrediction(date: ISODate, undo: ToastAction): Promise<void> {
-    const saved = date === today ? t('toast.periodStarted') : t('toast.periodFrom', { date: formatDate(date) });
     const profile = await getProfile(pid);
+    const first = periods.length === 0 && profile?.firstPeriodPending;
+    const saved = first ? t('toast.firstPeriod', { date: formatDate(date) })
+      : date === today ? t('toast.periodStarted') : t('toast.periodFrom', { date: formatDate(date) });
     const next = profile?.mode !== 'pregnant' ? profile?.prediction?.cycles[0]?.start : undefined;
     toast(next ? `${saved}. ${t('toast.nextLikely', { date: formatDate(next) })}` : saved, undo);
   }
 
-  async function start(date: ISODate = today): Promise<void> {
+  async function start(date: ISODate = today, notLochia = false): Promise<void> {
     const { op, nearby } = periodOn(periods, date, today);
     if (op.type === 'none') { toast(t('toast.alreadyPeriod')); return; }
+    if (!notLochia) {
+      const profile = await getProfile(pid);
+      if (profile && likelyLochia(profile, periods, date)) { setLochia(date); return; }
+    }
     if (nearby) { setAsk({ date, nearby }); return; }
     await savedWithPrediction(date, await applyUndoable(await asStart(op, date)));
   }
@@ -62,5 +71,11 @@ export function usePeriodActions(pid: string, periods: PeriodRec[]) {
     else await savedWithPrediction(ask.date, undo);
   }
 
-  return { ongoing, start, end, ask, resolve, cancelAsk: () => setAsk(null) };
+  async function answerLochia(isPeriod: boolean): Promise<void> {
+    const date = lochia;
+    setLochia(null);
+    if (date && isPeriod) await start(date, true);
+  }
+
+  return { ongoing, start, end, ask, resolve, cancelAsk: () => setAsk(null), lochia, answerLochia };
 }
