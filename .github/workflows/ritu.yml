@@ -1,0 +1,78 @@
+# Checks for the Ritu app (ritu/): typecheck, unit tests in two time zones, a production build,
+# the end-to-end browser test, and a debug APK to install on a phone. Nothing here deploys anything.
+name: Ritu
+
+on:
+  push:
+    paths: ['ritu/**', '.github/workflows/ritu.yml']
+  pull_request:
+    paths: ['ritu/**', '.github/workflows/ritu.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ritu-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: ritu
+
+jobs:
+  check:
+    name: Typecheck, tests, build, browser test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ritu/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:tz
+      - run: npm run build
+      - name: Browser test
+        run: |
+          npx playwright install --with-deps chromium
+          npx vite preview --port 4173 --strictPort &
+          for i in $(seq 1 30); do curl -sf http://localhost:4173/ > /dev/null && break; sleep 1; done
+          npm run e2e
+      - name: Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ritu-screenshots
+          path: ritu/e2e/out/shots
+          if-no-files-found: ignore
+
+  android:
+    name: Debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ritu/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Build the web app and copy it into android/
+        run: npm run android
+      - name: Build the debug APK
+        working-directory: ritu/android
+        run: ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ritu-debug-apk
+          path: ritu/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
